@@ -54,7 +54,7 @@
            <div class="checkout">
                <div class="container">
 
-                   <h3>Your Orders : <span> {{ data|length}} Orders</span></h3>
+                   <h3>Your Orders : <span> Orders</span></h3>
 
                    <div class="checkout-right">
                        <table class="timetable_sub">
@@ -64,7 +64,7 @@
                                <th>Liste des produits</th>
                                <th>Montant</th>
                                <th>Date de creation</th>
-                               <th>Etat de livraison</th>
+                               <th>Etat</th>
                                <th>Remove</th>
                            </tr>
                            </thead>
@@ -73,32 +73,39 @@
                            <tr class="rem1">
                                <td class="invert">{{ i.reference }}</td>
                                <td class="invert">
-                                   {% for a in  i.getCommandeProduits().toArray() %}
-                                  <b>Nom</b> : {{ a.getProduit().nom}} , <b>Quantite </b> : {{ a.quantiteProduit }} <br>
+                                   {% for a in  i.produits  %}
+                                   {{ a.image}}
                                    {% endfor %}
                                </td>
                                <td class="invert">
                                    <div class="quantity">
-                                       {{ i.montant }}DT
+                                       5000DT
                                    </div>
                                </td>
-                               <td class="invert"> {{ i.getDateCreation().format('j-m-y') }}</td>
-                               <td class="invert">{{ i.status }}</td>
+                               <td class="invert"> 12/02/2022</td>
+                               <td class="invert">En Attente</td>
                                <td class="invert">
                                    <div class="rem">
-                                       <a href="{{ path('commandeDelete',{'id':i.id}) }}">
                                        <div class="close1"> </div>
-                                       </a>
                                    </div>
-
+                                   <script>$(document).ready(function(c) {
+                                           $('.close1').on('click', function(c){
+                                               $('.rem1').fadeOut('slow', function(c){
+                                                   $('.rem1').remove();
+                                               });
+                                           });
+                                       });
+                                   </script>
                                </td>
                            </tr>
                            {% endfor %}
 
                        </table>
-
-
-
+                       <br>
+                       <H3>Ajouter un commande</H3>
+                       <br>
+                       {{ form(form) }}
+                   </div>
 
                </div>
            </div>

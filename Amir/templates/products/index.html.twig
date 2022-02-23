@@ -2,8 +2,7 @@
 
 {% block title %}Hello ProductsController!{% endblock %}
 {% block actProduct%} class="act" {% endblock %}
-{% block ShowLogin %}
-{% endblock %}
+{% block showLogin %}{% endblock %}
 {% block banner %}
     <!-- banner -->
     <div class="banner8" id="home1">
@@ -159,14 +158,14 @@
                         <div class="col-md-4 agileinfo_new_products_grid agileinfo_new_products_grid_dresses">
                             <div class="agile_ecommerce_tab_left dresses_grid">
                                 <div class="hs-wrapper hs-wrapper2">
-                                    <img src="images/ado-banner.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p1.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p3.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p1.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p3.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                    <img src="{{ i.image }}" alt=" " class="img-responsive" />
                                     <div class="w3_hs_bottom w3_hs_bottom_sub1">
                                         <ul>
                                             <li>
@@ -175,9 +174,9 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <h5><a href="single.html">Ideal Luminous Mousse</a></h5>
+                                <h5><a href="single.html">{{ i.nom }}</a></h5>
                                 <div class="simpleCart_shelfItem">
-                                    <p><span>{{ i.prix }}</span> <i class="item_price">$200</i></p>
+                                    <p> <i class="item_price">{{ i.prix }}</i></p>
                                     <p><a href="{{ path('panier') }}" class="item_add" href="#">Add to cart</a></p>
                                 </div>
                             </div>

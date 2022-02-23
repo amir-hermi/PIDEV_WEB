@@ -22,18 +22,19 @@ class PanierRepository extends ServiceEntityRepository
     // /**
     //  * @return Panier[] Returns an array of Panier objects
     //  */
-
-    public function SumProduits($value)
+    /*
+    public function findByExampleField($value)
     {
         return $this->createQueryBuilder('p')
-            ->select('count(p.client)')
-            ->andWhere('p.client = :val')
+            ->andWhere('p.exampleField = :val')
             ->setParameter('val', $value)
+            ->orderBy('p.id', 'ASC')
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-
+    */
 
     /*
     public function findOneBySomeField($value): ?Panier

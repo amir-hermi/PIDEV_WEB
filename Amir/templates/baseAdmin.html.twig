@@ -64,6 +64,16 @@
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Liste des produits</span></a>
     </li>
+    <li class="nav-item{% block activeCat%} {% endblock %}">
+        <a class="nav-link" href="{{ path('listcategorie') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Liste des categories </span></a>
+    </li>
+    <li class="nav-item{% block activeM%} {% endblock %}">
+        <a class="nav-link" href="{{ path('listMarques') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Liste des marques </span></a>
+    </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider">

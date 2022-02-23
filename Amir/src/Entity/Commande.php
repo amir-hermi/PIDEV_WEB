@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,7 +36,10 @@ class Commande
      */
     private $montant;
 
-
+    /**
+     * @ORM\ManyToMany(targetEntity=Produit::class, mappedBy="commandes")
+     */
+    private $produits;
 
 
 
@@ -48,19 +50,12 @@ class Commande
 
     /**
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="commande")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $client;
 
-    /**
-     * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="commande" , cascade={"persist", "remove"})
-     */
-    private $commandeProduits;
-
     public function __construct()
     {
-        $this->date_creation = date_create();
-        $this->commandeProduits = new ArrayCollection();
+        $this->produits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,12 +103,32 @@ class Commande
         return $this;
     }
 
+    /**
+     * @return Collection|Produit[]
+     */
+    public function getProduits(): Collection
+    {
+        return $this->produits;
+    }
 
+    public function addProduit(Produit $produit): self
+    {
+        if (!$this->produits->contains($produit)) {
+            $this->produits[] = $produit;
+            $produit->addCommande($this);
+        }
 
+        return $this;
+    }
 
+    public function removeProduit(Produit $produit): self
+    {
+        if ($this->produits->removeElement($produit)) {
+            $produit->removeCommande($this);
+        }
 
-
-
+        return $this;
+    }
 
 
 
@@ -139,36 +154,6 @@ class Commande
     public function setClient(?Client $client): self
     {
         $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|CommandeProduit[]
-     */
-    public function getCommandeProduits(): Collection
-    {
-        return $this->commandeProduits;
-    }
-
-    public function addCommandeProduit(CommandeProduit $commandeProduit): self
-    {
-        if (!$this->commandeProduits->contains($commandeProduit)) {
-            $this->commandeProduits[] = $commandeProduit;
-            $commandeProduit->setCommande($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommandeProduit(CommandeProduit $commandeProduit): self
-    {
-        if ($this->commandeProduits->removeElement($commandeProduit)) {
-            // set the owning side to null (unless already changed)
-            if ($commandeProduit->getCommande() === $this) {
-                $commandeProduit->setCommande(null);
-            }
-        }
 
         return $this;
     }

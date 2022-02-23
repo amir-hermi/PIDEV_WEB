@@ -6,6 +6,7 @@ use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProduitRepository::class)
@@ -21,48 +22,60 @@ class Produit
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Assert\NotBlank(message="prix is required")
      */
     private $prix;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="image is required")
      */
     private $image;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotBlank(message="quantite is required")
      */
     private $quantite;
 
     /**
      * @ORM\ManyToMany(targetEntity=Panier::class, inversedBy="produits")
-     * @ORM\JoinTable(name="panierproduit")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $panier;
 
-
+    /**
+     * @ORM\ManyToMany(targetEntity=Commande::class, inversedBy="produits")
+     */
+    private $commandes;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $nom;
-
-    /**
-     * @ORM\Column(type="float")
+     * @Assert\NotBlank(message="taille is required")
      */
     private $taille;
 
     /**
-     * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="produit" , cascade={"persist", "remove"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="nom is required")
      */
-    private $commandeProduits;
+    private $nom;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Marque::class, inversedBy="produits" )
+     */
+    private $marque;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Categorie::class, inversedBy="produits" )
+     */
+    private $Categorie;
+
+
 
     public function __construct()
     {
         $this->panier = new ArrayCollection();
-        $this->commandeProduits = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -130,7 +143,41 @@ class Produit
         return $this;
     }
 
+    /**
+     * @return Collection|Commande[]
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
 
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        $this->commandes->removeElement($commande);
+
+        return $this;
+    }
+
+    public function getTaille(): ?string
+    {
+        return $this->taille;
+    }
+
+    public function setTaille(?string $taille): self
+    {
+        $this->taille = $taille;
+
+        return $this;
+    }
 
     public function getNom(): ?string
     {
@@ -144,45 +191,31 @@ class Produit
         return $this;
     }
 
-    public function getTaille(): ?float
+    public function getMarque(): ?Marque
     {
-        return $this->taille;
+        return $this->marque;
     }
 
-    public function setTaille(float $taille): self
+    public function setMarque(?Marque $marque): self
     {
-        $this->taille = $taille;
+        $this->marque = $marque;
 
         return $this;
     }
 
-    /**
-     * @return Collection|CommandeProduit[]
-     */
-    public function getCommandeProduits(): Collection
+    public function getCategorie(): ?Categorie
     {
-        return $this->commandeProduits;
+        return $this->Categorie;
     }
 
-    public function addCommandeProduit(CommandeProduit $commandeProduit): self
+    public function setCategorie(?categorie $categorie): self
     {
-        if (!$this->commandeProduits->contains($commandeProduit)) {
-            $this->commandeProduits[] = $commandeProduit;
-            $commandeProduit->setProduit($this);
-        }
+        $this->Categorie = $categorie;
 
         return $this;
     }
 
-    public function removeCommandeProduit(CommandeProduit $commandeProduit): self
-    {
-        if ($this->commandeProduits->removeElement($commandeProduit)) {
-            // set the owning side to null (unless already changed)
-            if ($commandeProduit->getProduit() === $this) {
-                $commandeProduit->setProduit(null);
-            }
-        }
 
-        return $this;
-    }
+
+
 }

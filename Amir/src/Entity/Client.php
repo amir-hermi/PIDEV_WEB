@@ -50,14 +50,12 @@ class Client
     private $etat;
 
     /**
-     * @ORM\OneToMany(targetEntity=Commande::class, mappedBy="client")
-     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @ORM\OneToMany(targetEntity=commande::class, mappedBy="client")
      */
     private $commande;
 
     /**
      * @ORM\OneToOne(targetEntity=Panier::class, mappedBy="client", cascade={"persist", "remove"})
-     *
      */
     private $panier;
 

@@ -2,13 +2,11 @@
 
 namespace App\Controller;
 
-use App\Repository\PanierRepository;
+use App\Entity\Produit;
+use App\Form\ProductsType;
 use App\Repository\ProduitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,46 +16,79 @@ class ProductsController extends AbstractController
     /**
      * @Route("/products", name="products")
      */
-    public function index( PanierRepository $panierRepository,ProduitRepository $repository): Response
+    public function index(ProduitRepository $repository): Response
     {
-        $d = $panierRepository->findBy(['client'=>1])[0];
-        $sum = $d->getProduits()->count();
-        $dataTarray = $d->getProduits()->toArray();
-        $total=0.0;
-        foreach ($dataTarray as $p){
-            $total += ($p->getPrix() * $p->getQuantite());
-        }
         $data = $repository->findAll();
         return $this->render('products/index.html.twig', [
-            'data' => $data,'sumP'=>$sum , 'total'=>$total
+            'data' => $data,
         ]);
     }
 
     /**
-     * @Route("/detailleProduit{id}", name="detailleProduit")
+     * @param ProduitRepository $repository
+     * @return Response
+     * @Route("/administrateur/produit",name="listproduit")
      */
-    public function detailleProduit(PanierRepository $panierRepository,$id , ProduitRepository $repository,Request $request): Response
+
+    public function affiche(ProduitRepository $repository){
+        //$repo=$this->getDoctrine()->getRepository(Produit::class);
+        $produit=$repository->findAll();
+        return $this->render('administrateur/produit.html.twig',
+        ['produits'=>$produit]);
+    }
+
+    /**
+     * @Route("/deleteP/{id}",name="deleteproduit")
+     */
+    function deleteP($id, ProduitRepository $repository)
     {
-        $d = $panierRepository->findBy(['client'=>1])[0];
-        $sum = $d->getProduits()->count();
-        $dataTarray = $d->getProduits()->toArray();
-        $total=0.0;
-        foreach ($dataTarray as $p){
-            $total += ($p->getPrix() * $p->getQuantite());
+        $produit = $repository->find($id);
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($produit);
+        $em->flush();
+        return $this->redirectToRoute('listproduit');
+
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @Route("/Products/add", name="addproduct")
+     */
+    function add(Request $request) {
+    $produit=new Produit();
+    $form=$this->createForm(ProductsType::class, $produit);
+    $form->add('Ajouter',SubmitType::class);
+    $form->handleRequest($request);
+
+    if($form->isSubmitted() && $form->isValid() ) {
+        $em=$this->getDoctrine()->getManager();
+        $em->persist($produit);
+        $em->flush();
+        return $this->redirectToRoute('listproduit');
         }
-        $p = $repository->find($id);
-        $form = $this->createFormBuilder($p)
-            ->add('quantite',IntegerType::class)
-            ->add('taille',TextType::class)
-            ->add('Confirmer',SubmitType::class)
-            ->getForm();
+    return $this->render('products/add.html.twig',[
+        'form'=>$form->createView()
+    ]);
+    }
+
+    /**
+     * @Route("Products/update/{id}" , name="updateproduct")
+     */
+    function Update(ProduitRepository $repository,$id,Request $request) {
+        $produit=$repository->find($id);
+        $form=$this->createForm(ProductsType::class,$produit);
+        $form->add('update',SubmitType::class);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $em=$this->getDoctrine()->getManager();
             $em->flush();
-            return $this->redirectToRoute('panier');
+            return $this->redirectToRoute("listproduit");
         }
-        //dd($p);
-        return $this->render('panier/produitDetaille.html.twig',['total'=>$total,'sumP'=>$sum,'produit'=>$p , 'form'=>$form->createView()]);
+        return $this->render('Products/update.html.twig',
+        [
+            'form'=>$form->createView()
+        ]);
+
     }
 }

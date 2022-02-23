@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\PanierRepository;
+use App\Repository\MarqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=PanierRepository::class)
+ * @ORM\Entity(repositoryClass=MarqueRepository::class)
  */
-class Panier
+class Marque
 {
     /**
      * @ORM\Id
@@ -19,19 +20,18 @@ class Panier
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank (message="libelle is required")
+     */
+    private $libelle;
+
 
 
     /**
-     * @ORM\ManyToMany(targetEntity=Produit::class, mappedBy="panier")
+     * @ORM\OneToMany(targetEntity=Produit::class, mappedBy="marque" , cascade={"remove"})
      */
     private $produits;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Client::class, inversedBy="panier", cascade={"persist", "remove"})
-     */
-    private $client;
-
-
 
     public function __construct()
     {
@@ -41,6 +41,18 @@ class Panier
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLibelle(): ?string
+    {
+        return $this->libelle;
+    }
+
+    public function setLibelle(?string $libelle): self
+    {
+        $this->libelle = $libelle;
+
+        return $this;
     }
 
 
@@ -57,7 +69,7 @@ class Panier
     {
         if (!$this->produits->contains($produit)) {
             $this->produits[] = $produit;
-            $produit->addPanier($this);
+            $produit->setMarque($this);
         }
 
         return $this;
@@ -66,20 +78,11 @@ class Panier
     public function removeProduit(Produit $produit): self
     {
         if ($this->produits->removeElement($produit)) {
-            $produit->removePanier($this);
+            // set the owning side to null (unless already changed)
+            if ($produit->getMarque() === $this) {
+                $produit->setMarque(null);
+            }
         }
-
-        return $this;
-    }
-
-    public function getClient(): ?client
-    {
-        return $this->client;
-    }
-
-    public function setClient(?client $client): self
-    {
-        $this->client = $client;
 
         return $this;
     }

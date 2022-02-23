@@ -3,7 +3,7 @@ Author: W3layouts
 Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
--->{% set sum = sumP %}
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +54,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <body>
 <!-- header -->
 {% block header %}
-
 <div class="modal fade" id="myModal88" tabindex="-1" role="dialog" aria-labelledby="myModal88"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -140,13 +139,10 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     </div>
 </div>
     {% block ShowLogin %}
-<script>
-    $('#myModal88').modal('show');
-</script>
+
         {% endblock %}
 <div class="header">
     <div class="container">
-
         <div class="w3l_login">
             <a href="#" data-toggle="modal" data-target="#myModal88"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
         </div>
@@ -164,12 +160,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             </div>
         </div>
         <div class="cart box_1">
-           {% block panier%} <a href="{{ path('panier') }}">
+            <a href="{{ path('panier') }}">
                 <div class="total">
-                    <span >{{ total }}.00</span> ({{sum}}</span> items)</div>
+                    <span class="simpleCart_total"></span> (<span id="simpleCart_quantity" class="simpleCart_quantity"></span> items)</div>
                 <img src="images/bag.png" alt="" />
             </a>
-            {%endblock %}
             <p><a href="javascript:;" class="simpleCart_empty">Empty Cart</a></p>
             <div class="clearfix"> </div>
         </div>

@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
+use App\Repository\CategorieRepository;
 use App\Repository\CommandeRepository;
-use Symfony\Component\HttpFoundation\Request;
+use App\Repository\ProduitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,12 +21,15 @@ class AdministrateurController extends AbstractController
         ]);
     }
 
+
+
+
     /**
      * @Route("/administrateur/commande", name="listcommande")
      */
     public function listCommande(CommandeRepository $repository): Response
     {
-        $data = $repository->findBy(['client'=>1]);
+        $data = $repository->findAll();
         return $this->render('administrateur/commande.html.twig', [
             'data' => $data,
         ]);
@@ -43,42 +45,17 @@ class AdministrateurController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/administrateur/produit", name="listproduit")
-     */
-    public function listProduit(): Response
-    {
-        return $this->render('administrateur/produit.html.twig', [
-            'controller_name' => 'AdministrateurController',
-        ]);
-    }
 
     /**
-     * @Route("/administrateur/updateCommande{idP}", name="updateCommande")
+     * @Route("/administrateur/categorie", name="listcategorie")
      */
-    public function updateCommande($idP,CommandeRepository $repository , Request $request): Response
-    {
-        $comm = $repository->find($idP);
-        $form = $this->createFormBuilder($comm)
-            ->add('status',ChoiceType::class,[
-                'choices'  => [
-                    'En Attente' => 'En attente',
-                    'Annulée' => 'Annulée',
-                    'Confirmé' => 'Confirmée',
-                    'En cours de preparation' => 'En cours de preparation',
-                    'Livraison en cours' => 'Livraison en cours',
-                    'Livrée' => 'Livrée',
-                ]])
-            ->add('Confirmer',SubmitType::class)
-            ->getForm();
-        $form->handleRequest($request);
-        if($form->isSubmitted()){
-            $em=$this->getDoctrine()->getManager();
-            $em->flush();
-            return $this->redirectToRoute('listcommande');
-        }
-        return $this->render('administrateur/updateCommande.html.twig', [
-            'formU' => $form->createView(),
-        ]);
+
+
+    public function afficheCat (CategorieRepository $repository){
+        //$repo=$this->getDoctrine()->getRepository(Produit::class);
+        $categorie=$repository->findAll();
+        return $this->render('administrateur/categorie.html.twig',
+            ['categorie'=>$categorie]);
+
     }
 }
