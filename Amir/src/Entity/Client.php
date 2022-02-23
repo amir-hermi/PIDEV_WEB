@@ -51,21 +51,25 @@ class Client
 
     /**
      * @ORM\OneToMany(targetEntity=Commande::class, mappedBy="client")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $commande;
 
     /**
      * @ORM\OneToOne(targetEntity=Panier::class, mappedBy="client", cascade={"persist", "remove"})
-     *
      */
     private $panier;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reclamation::class, mappedBy="client")
+     */
+    private $reclamations;
 
 
 
     public function __construct()
     {
         $this->commande = new ArrayCollection();
+        $this->reclamations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -193,6 +197,36 @@ class Client
         }
 
         $this->panier = $panier;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reclamation[]
+     */
+    public function getReclamations(): Collection
+    {
+        return $this->reclamations;
+    }
+
+    public function addReclamation(Reclamation $reclamation): self
+    {
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations[] = $reclamation;
+            $reclamation->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReclamation(Reclamation $reclamation): self
+    {
+        if ($this->reclamations->removeElement($reclamation)) {
+            // set the owning side to null (unless already changed)
+            if ($reclamation->getClient() === $this) {
+                $reclamation->setClient(null);
+            }
+        }
 
         return $this;
     }

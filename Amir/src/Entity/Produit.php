@@ -36,33 +36,18 @@ class Produit
 
     /**
      * @ORM\ManyToMany(targetEntity=Panier::class, inversedBy="produits")
-     * @ORM\JoinTable(name="panierproduit")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $panier;
 
-
-
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\ManyToMany(targetEntity=Commande::class, inversedBy="produits")
      */
-    private $nom;
-
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $taille;
-
-    /**
-     * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="produit" , cascade={"persist", "remove"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private $commandeProduits;
+    private $commandes;
 
     public function __construct()
     {
         $this->panier = new ArrayCollection();
-        $this->commandeProduits = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -130,58 +115,26 @@ class Produit
         return $this;
     }
 
-
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getTaille(): ?float
-    {
-        return $this->taille;
-    }
-
-    public function setTaille(float $taille): self
-    {
-        $this->taille = $taille;
-
-        return $this;
-    }
-
     /**
-     * @return Collection|CommandeProduit[]
+     * @return Collection|Commande[]
      */
-    public function getCommandeProduits(): Collection
+    public function getCommandes(): Collection
     {
-        return $this->commandeProduits;
+        return $this->commandes;
     }
 
-    public function addCommandeProduit(CommandeProduit $commandeProduit): self
+    public function addCommande(Commande $commande): self
     {
-        if (!$this->commandeProduits->contains($commandeProduit)) {
-            $this->commandeProduits[] = $commandeProduit;
-            $commandeProduit->setProduit($this);
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
         }
 
         return $this;
     }
 
-    public function removeCommandeProduit(CommandeProduit $commandeProduit): self
+    public function removeCommande(Commande $commande): self
     {
-        if ($this->commandeProduits->removeElement($commandeProduit)) {
-            // set the owning side to null (unless already changed)
-            if ($commandeProduit->getProduit() === $this) {
-                $commandeProduit->setProduit(null);
-            }
-        }
+        $this->commandes->removeElement($commande);
 
         return $this;
     }

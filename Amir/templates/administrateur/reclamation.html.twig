@@ -1,6 +1,7 @@
 {% extends 'baseAdmin.html.twig' %}
-{% block activeC %} active {% endblock %}
+
 {% block title %}Hello AdministrateurController!{% endblock %}
+{% block activeCl %} active {% endblock %}
 {% block css %}
     <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
@@ -18,52 +19,57 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Liste des Commandes</h1>
+        <h1 class="h3 mb-2 text-gray-800" align="center">Liste des Réclamations</h1>
+        <hr class="sidebar-divider my-0">
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
-
+            {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
+                {% endfor %}
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
-                        <tr>
-                            <th>Reference</th>
-                            <th>Liste des produits</th>
-                            <th>Nom de client</th>
-                            <th>Region</th>
-                            <th>Montant</th>
-                            <th>Date de creation</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                        <tr align="center">
+                            <th>Réference</th>
+                            <th>Date Reclamation</th>
+                            <th>Type Reclamation</th>
+                            <th>Supprimer</th>
+                            <th>Télecharger</th>
+                            <th>Archiver</th>
                         </tr>
                         </thead>
                         <tfoot>
-                        <tr>
-                            <th>Reference</th>
-                            <th>Liste des produits</th>
-                            <th>Nom de client</th>
-                            <th>Region</th>
-                            <th>Montant</th>
-                            <th>Date de creation</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
+
                         </tfoot>
                         <tbody>
                         {% for i in data %}
-                        <tr>
-                            <td>{{ i.reference }}</td>
-                            <td>System Architect</td>
-                            <td>{{ i.client.id }}</td>
-                            <td></td>
-                            <td>{{ i.montant }}</td>
-                            <td>$320,800</td>
-                            <td>$320,800</td>
-                            <td><a href="#" class="btn btn-warning btn-circle">
-                                    <i class="fas fa-pen"></i>
-                                </a></td>
-                        </tr>
+                            <tr align="center">
+                                <td>{{ i.id }}</td>
+                                <td>{{ i.date |date('d-m-Y') }}</td>
+                                <td>{{ i.categorieReclamation.type }}</td>
+
+
+                                <td>
+                                    <a href="{{ path('suppR',{'id' :i.id}) }}" class="btn btn-danger btn-circle">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ asset('downloads/recClient.pdf') }}" download="mission.pdf">
+                                        telécharger
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('suppM',{'id' :i.id}) }}" class="btn btn-warning btn-circle">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </a>
+                                </td>
+                            </tr>
                         {% endfor %}
 
                         </tbody>
@@ -89,6 +95,9 @@
     <script src="{{ asset('adminStyle/vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
+
     <!-- Page level custom scripts -->
-    <script src="{{ asset('adminStyle/js/demo/datatables-demo.js') }}"></script>
+    <script src="{{ asset('adminStyle/js/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('adminStyle/js/demo/chart-pie-demo.js') }}"></script>
+
 {% endblock %}

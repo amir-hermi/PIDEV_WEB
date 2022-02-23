@@ -2,11 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Mission;
+use App\Entity\Reclamation;
+use App\Form\MissionType;
+use App\Form\ReclamationType;
+use App\Repository\ClientRepository;
 use App\Repository\CommandeRepository;
-use Symfony\Component\HttpFoundation\Request;
+use App\Repository\FournisseurRepository;
+use App\Repository\MissionRepository;
+use App\Repository\ReclamationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,7 +33,7 @@ class AdministrateurController extends AbstractController
      */
     public function listCommande(CommandeRepository $repository): Response
     {
-        $data = $repository->findBy(['client'=>1]);
+        $data = $repository->findAll();
         return $this->render('administrateur/commande.html.twig', [
             'data' => $data,
         ]);
@@ -36,49 +42,141 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/client", name="listclient")
      */
-    public function listClient(): Response
+    public function listClient( ClientRepository $repository): Response
     {
+        $data = $repository->findAll();
         return $this->render('administrateur/client.html.twig', [
-            'controller_name' => 'AdministrateurController',
+            'data' => $data,
+        ]);
+
+    }
+
+    /**
+     * @Route ("/clientDelete/{id}", name="clientDelete")
+     */
+    public function delete(ClientRepository $repository , $id): Response
+    {
+        $client =$repository->find($id) ;
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($client);
+        $manager->flush();
+        //return new Response('suppression avec succes');
+        return $this->redirectToRoute('listclient');
+    }
+
+    /**
+     * @Route ("/clientbloque/{id}", name="clientbloque")
+     */
+    public function bloque(ClientRepository $repository , $id): Response
+    {
+        $client =$repository->find($id) ;
+        $manager = $this->getDoctrine()->getManager();
+        $client->setEtat('Bloquer');
+
+
+        $manager->flush();
+        //return new Response('suppression avec succes');
+        return $this->redirectToRoute('listclient');
+    }
+    /**
+     * @Route ("/clientdebloque/{id}", name="clientdebbloque")
+     */
+    public function debloque(ClientRepository $repository , $id): Response
+    {
+        $client =$repository->find($id) ;
+        $manager = $this->getDoctrine()->getManager();
+        $client->setEtat('Debloquer');
+
+
+        $manager->flush();
+        //return new Response('suppression avec succes');
+        return $this->redirectToRoute('listclient');
+    }
+
+    /**
+     * @Route("/administrateur/Fou", name="listfournisseur")
+     */
+    public function listfournisseur(FournisseurRepository $repository): Response
+    {
+        $data = $repository->findAll();
+        return $this->render('administrateur/fournisseur.html.twig', [
+            'data' => $data,
         ]);
     }
 
     /**
-     * @Route("/administrateur/produit", name="listproduit")
+     * @Route("/administrateur/mission", name="listmission")
      */
-    public function listProduit(): Response
+    public function listMission(MissionRepository $repository): Response
     {
-        return $this->render('administrateur/produit.html.twig', [
-            'controller_name' => 'AdministrateurController',
+        $data = $repository->findAll();
+        return $this->render('administrateur/mission.html.twig', [
+            'data' => $data,
         ]);
+
+    }
+    /**
+     * @Route("/administrateur/reclamation", name="listreclamation")
+     */
+    public function listReclamation(ReclamationRepository $repository): Response
+    {
+        $data = $repository->findAll();
+        return $this->render('administrateur/reclamation.html.twig', [
+            'data' => $data,
+        ]);
+
     }
 
     /**
-     * @Route("/administrateur/updateCommande{idP}", name="updateCommande")
+     * @Route("/suppM/{id}", name="suppM")
      */
-    public function updateCommande($idP,CommandeRepository $repository , Request $request): Response
+    public function suppM($id): Response
     {
-        $comm = $repository->find($idP);
-        $form = $this->createFormBuilder($comm)
-            ->add('status',ChoiceType::class,[
-                'choices'  => [
-                    'En Attente' => 'En attente',
-                    'Annulée' => 'Annulée',
-                    'Confirmé' => 'Confirmée',
-                    'En cours de preparation' => 'En cours de preparation',
-                    'Livraison en cours' => 'Livraison en cours',
-                    'Livrée' => 'Livrée',
-                ]])
-            ->add('Confirmer',SubmitType::class)
-            ->getForm();
+        $mission = $this->getDoctrine()->getRepository(Mission::class)->find($id);
+        $en =$this->getDoctrine()->getManager();
+        $en->remove($mission);
+        $en->flush();
+        $this->addFlash('success','cette mission a bien été supprimé');
+        return $this->redirectToRoute('listmission');
+
+    }
+
+    /**
+     * @Route("/modifM/{id}", name="modifM")
+     */
+    public function modifM(Request $request,$id): Response
+    {
+
+        $mission = $this->getDoctrine()->getRepository(Mission::class)->find($id);
+        $form=$this->createForm(MissionType::class,$mission);
         $form->handleRequest($request);
-        if($form->isSubmitted()){
-            $em=$this->getDoctrine()->getManager();
+        if($form->isSubmitted())
+        {
+            $em= $this->getDoctrine()->getManager();
             $em->flush();
-            return $this->redirectToRoute('listcommande');
+            $this->addFlash('success','cette mission a bien été modifié');
+            return $this->redirectToRoute('mission');
+
         }
-        return $this->render('administrateur/updateCommande.html.twig', [
-            'formU' => $form->createView(),
+        return $this->render('mission/index.html.twig', [
+            'f' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/suppR/{id}", name="suppR")
+     */
+    public function suppR($id): Response
+    {
+        $reclamation = $this->getDoctrine()->getRepository(Reclamation::class)->find($id);
+        $en =$this->getDoctrine()->getManager();
+        $en->remove($reclamation);
+        $en->flush();
+        $this->addFlash('success','cette reclamation a bien été supprimé');
+        return $this->redirectToRoute('listreclamation');
+    }
+
+
+
+
 }

@@ -1,6 +1,7 @@
 {% extends 'baseAdmin.html.twig' %}
-{% block activeC %} active {% endblock %}
+
 {% block title %}Hello AdministrateurController!{% endblock %}
+{% block activeFr %} active {% endblock %}
 {% block css %}
     <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
@@ -18,7 +19,7 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Liste des Commandes</h1>
+        <h1 class="h3 mb-2 text-gray-800">Liste des Fournisseurs</h1>
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
@@ -28,43 +29,39 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>Reference</th>
-                            <th>Liste des produits</th>
-                            <th>Nom de client</th>
-                            <th>Region</th>
-                            <th>Montant</th>
-                            <th>Date de creation</th>
-                            <th>Status</th>
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>email</th>
+                            <th>telephone</th>
+                            <th>etat de client</th>
                             <th>Action</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
-                            <th>Reference</th>
-                            <th>Liste des produits</th>
-                            <th>Nom de client</th>
-                            <th>Region</th>
-                            <th>Montant</th>
-                            <th>Date de creation</th>
-                            <th>Status</th>
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>email</th>
+                            <th>telephone</th>
+                            <th>etat de client</th>
                             <th>Action</th>
+
                         </tr>
                         </tfoot>
                         <tbody>
-                        {% for i in data %}
-                        <tr>
-                            <td>{{ i.reference }}</td>
-                            <td>System Architect</td>
-                            <td>{{ i.client.id }}</td>
-                            <td></td>
-                            <td>{{ i.montant }}</td>
-                            <td>$320,800</td>
-                            <td>$320,800</td>
-                            <td><a href="#" class="btn btn-warning btn-circle">
-                                    <i class="fas fa-pen"></i>
-                                </a></td>
-                        </tr>
-                        {% endfor %}
+
+                            <tr>
+                                <td>{{ i.nom }}</td>
+                                <td>{{ i.prenom }}</td>
+                                <td>{{ i.email }}</td>>
+                                <td>{{ i.tel }}</td>
+                                <td>{{ i.etat }}</td>
+                                <td>
+
+
+                                </td>
+                            </tr>
+
 
                         </tbody>
                     </table>

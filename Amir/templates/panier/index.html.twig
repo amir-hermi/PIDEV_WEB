@@ -1,12 +1,6 @@
 {% extends 'base.html.twig' %}
-{% set prod = {} %}
-{% for i in data %}
 
-        {%  set prod = prod|merge([i.id]) %}
-    {% endfor %}
-{% set count=0 %}
 {% block banner %}
-
     <!-- banner -->
     <div class="banner10" id="home1">
         <div class="container">
@@ -58,11 +52,10 @@
                });
            </script>
            <!-- //end-smooth-scrolling -->
-
            <!-- checkout -->
            <div class="checkout">
                <div class="container">
-                   <h3>Your shopping cart contains: <span>{{ data|length}} Products</span></h3>
+                   <h3>Your shopping cart contains: <span>3 Products</span></h3>
 
                    <div class="checkout-right">
                        <table class="timetable_sub">
@@ -70,74 +63,139 @@
                            <tr>
                                <th>SL No.</th>
                                <th>Product</th>
-                               <th>Quantite</th>
+                               <th>Quality</th>
                                <th>Product Name</th>
                                <th>Taille</th>
                                <th>Price</th>
-                               <th>Action</th>
+                               <th>Remove</th>
                            </tr>
                            </thead>
-                           {% for i in data %}
-                               {% set count=count+1 %}
-
-
-                               <tr class="rem1">
-                               <td class="invert">{{ count }}</td>
-                               <td class="invert-image"><a href="{{ path('detailleProduit',{id : i.id}) }}"><img src={{ i.image}} alt="" class="img-responsive" /></a></td>
+                           <tr class="rem1">
+                               <td class="invert">1</td>
+                               <td class="invert-image"><a href="single.html"><img src="images/j3.jpg" alt=" " class="img-responsive" /></a></td>
                                <td class="invert">
                                    <div class="quantity">
-                                       {{ i.quantite }}<br>
-
+                                       <div class="quantity-select">
+                                           <div class="entry value-minus">&nbsp;</div>
+                                           <div class="entry value"><span>1</span></div>
+                                           <div class="entry value-plus active">&nbsp;</div>
+                                       </div>
                                    </div>
                                </td>
+                               <td class="invert">Beige solid Chinos</td>
+                               <td class="invert">$5.00</td>
+                               <td class="invert">$200.00</td>
                                <td class="invert">
-                                       {{ i.nom}}
-                               <td class="invert">
-                                       {{ i.taille}}
-                                   </td>
-                               <td class="invert">
-
-                                       {{ i.prix }}$
-
-                               </td>
-                               <td class="invert">
-                                  <a href="{{ path('removeP',{id : i.id}) }}">
                                    <div class="rem">
                                        <div class="close1"> </div>
                                    </div>
-                                  </a>
+                                   <script>$(document).ready(function(c) {
+                                           $('.close1').on('click', function(c){
+                                               $('.rem1').fadeOut('slow', function(c){
+                                                   $('.rem1').remove();
+                                               });
+                                           });
+                                       });
+                                   </script>
                                </td>
                            </tr>
+                           <tr class="rem2">
+                               <td class="invert">2</td>
+                               <td class="invert-image"><a href="single.html"><img src="images/ss5.jpg" alt=" " class="img-responsive" /></a></td>
+                               <td class="invert">
+                                   <div class="quantity">
+                                       <div class="quantity-select">
+                                           <div class="entry value-minus">&nbsp;</div>
+                                           <div class="entry value"><span>1</span></div>
+                                           <div class="entry value-plus active">&nbsp;</div>
+                                       </div>
+                                   </div>
+                               </td>
+                               <td class="invert">Floral Border Skirt</td>
+                               <td class="invert">$5.00</td>
+                               <td class="invert">$270.00</td>
+                               <td class="invert">
+                                   <div class="rem">
+                                       <div class="close2"> </div>
+                                   </div>
+                                   <script>$(document).ready(function(c) {
+                                           $('.close2').on('click', function(c){
+                                               $('.rem2').fadeOut('slow', function(c){
+                                                   $('.rem2').remove();
+                                               });
+                                           });
+                                       });
+                                   </script>
+                               </td>
+                           </tr>
+                           <tr class="rem3">
+                               <td class="invert">3</td>
+                               <td class="invert-image"><a href="single.html"><img src="images/c7.jpg" alt=" " class="img-responsive" /></a></td>
+                               <td class="invert">
+                                   <div class="quantity">
+                                       <div class="quantity-select">
+                                           <div class="entry value-minus">&nbsp;</div>
+                                           <div class="entry value"><span>1</span></div>
+                                           <div class="entry value-plus active">&nbsp;</div>
+                                       </div>
+                                   </div>
+                               </td>
+                               <td class="invert">Beige Sandals</td>
+                               <td class="invert">$5.00</td>
+                               <td class="invert">$212.00</td>
+                               <td class="invert">
+                                   <div class="rem">
+                                       <div class="close3"> </div>
+                                   </div>
+                                   <script>$(document).ready(function(c) {
+                                           $('.close3').on('click', function(c){
+                                               $('.rem3').fadeOut('slow', function(c){
+                                                   $('.rem3').remove();
+                                               });
+                                           });
+                                       });
+                                   </script>
+                               </td>
+                           </tr>
+                           <!--quantity-->
+                           <script>
+                               $('.value-plus').on('click', function(){
+                                   var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)+1;
+                                   divUpd.text(newVal);
+                               });
 
-                           {% endfor %}
+                               $('.value-minus').on('click', function(){
+                                   var divUpd = $(this).parent().find('.value'), newVal = parseInt(divUpd.text(), 10)-1;
+                                   if(newVal>=1) divUpd.text(newVal);
+                               });
+                           </script>
+                           <!--quantity-->
                        </table>
                    </div>
                    <div class="checkout-left">
                        <div class="checkout-left-basket">
                            <h4>Continue to basket</h4>
-                           <ul>{% for i in data %}
-                               <li>{{ i.nom }} <i>- {{ i.quantite }}</i> <span>{{i.prix * i.quantite}}.00 DT</span></li>
-                               {% endfor %}
-                               <li>Frait de livraison <i>-</i> <span>7.00DT</span></li>
-                               <li>Total <i>-</i> <span>{{ total + 7.00 }}.00</span></li>
+                           <ul>
+                               <li>Product1 <i>-</i> <span>$200.00 </span></li>
+                               <li>Product2 <i>-</i> <span>$270.00 </span></li>
+                               <li>Product3 <i>-</i> <span>$212.00 </span></li>
+                               <li>Frait de livraison <i>-</i> <span>$15.00</span></li>
+                               <li>Total <i>-</i> <span>$697.00</span></li>
                            </ul>
                            <br>
                            <h4>Mode de payement</h4>
                            <select class="form-select" aria-label="Default select example">
-                               <option value="1">Espece</option>
+                               <option value="1">Cache</option>
                                <option value="2">Carte bancaire</option>
 
                            </select>
                            <br><br>
 
-                           <a href="{{ path('panierToCommande',{ idClient:1  }) }}" class="btn btn-success"><span aria-hidden="true"></span>Commander</a>
+                           <a href="products.html" class="btn btn-success"><span aria-hidden="true"></span>Commander</a>
                        </div>
                        <div class="checkout-right-basket">
                            <a href="{{ path('products') }}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
-<br><br>
-                           {{ form(formP) }}
                        </div>
-
                        <div class="clearfix"> </div>
                    </div>
                </div>
@@ -164,7 +222,7 @@
                                            </div>
                                        </div>
                                    </div>
-                                   <h5><a href="#">Pink Flared Skirt</a></h5>
+                                   <h5><a href="single.html">Pink Flared Skirt</a></h5>
                                    <div class="simpleCart_shelfItem">
                                        <p class="flexisel_ecommerce_cart"><span>$312</span> <i class="item_price">$212</i></p>
                                        <p><a class="item_add" href="#">Add to cart</a></p>
@@ -172,7 +230,84 @@
                                </div>
                            </div>
                        </li>
-
+                       <li>
+                           <div class="w3l_related_products_grid">
+                               <div class="agile_ecommerce_tab_left dresses_grid">
+                                   <div class="hs-wrapper hs-wrapper3">
+                                       <img src="images/ss2.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss3.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss4.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss5.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss6.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss9.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss7.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss8.jpg" alt=" " class="img-responsive">
+                                       <div class="w3_hs_bottom">
+                                           <div class="flex_ecommerce">
+                                               <a href="#" data-toggle="modal" data-target="#myModal6"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <h5><a href="single.html">Red Pencil Skirt</a></h5>
+                                   <div class="simpleCart_shelfItem">
+                                       <p class="flexisel_ecommerce_cart"><span>$432</span> <i class="item_price">$323</i></p>
+                                       <p><a class="item_add" href="#">Add to cart</a></p>
+                                   </div>
+                               </div>
+                           </div>
+                       </li>
+                       <li>
+                           <div class="w3l_related_products_grid">
+                               <div class="agile_ecommerce_tab_left dresses_grid">
+                                   <div class="hs-wrapper hs-wrapper3">
+                                       <img src="images/ss3.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss4.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss5.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss6.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss7.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss8.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss9.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss1.jpg" alt=" " class="img-responsive">
+                                       <div class="w3_hs_bottom">
+                                           <div class="flex_ecommerce">
+                                               <a href="#" data-toggle="modal" data-target="#myModal6"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <h5><a href="single.html">Yellow Cotton Skirt</a></h5>
+                                   <div class="simpleCart_shelfItem">
+                                       <p class="flexisel_ecommerce_cart"><span>$323</span> <i class="item_price">$310</i></p>
+                                       <p><a class="item_add" href="#">Add to cart</a></p>
+                                   </div>
+                               </div>
+                           </div>
+                       </li>
+                       <li>
+                           <div class="w3l_related_products_grid">
+                               <div class="agile_ecommerce_tab_left dresses_grid">
+                                   <div class="hs-wrapper hs-wrapper3">
+                                       <img src="images/ss4.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss5.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss6.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss7.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss8.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss9.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss1.jpg" alt=" " class="img-responsive">
+                                       <img src="images/ss2.jpg" alt=" " class="img-responsive">
+                                       <div class="w3_hs_bottom">
+                                           <div class="flex_ecommerce">
+                                               <a href="#" data-toggle="modal" data-target="#myModal6"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <h5><a href="single.html">Black Short</a></h5>
+                                   <div class="simpleCart_shelfItem">
+                                       <p class="flexisel_ecommerce_cart"><span>$256</span> <i class="item_price">$200</i></p>
+                                       <p><a class="item_add" href="#">Add to cart</a></p>
+                                   </div>
+                               </div>
+                           </div>
+                       </li>
                    </ul>
                    <script type="text/javascript">
                        $(window).load(function() {

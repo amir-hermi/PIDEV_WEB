@@ -23,14 +23,11 @@ class Panier
 
     /**
      * @ORM\ManyToMany(targetEntity=Produit::class, mappedBy="panier")
-     * @ORM\JoinTable(name="panierproduit")
-     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $produits;
 
     /**
      * @ORM\OneToOne(targetEntity=Client::class, inversedBy="panier", cascade={"persist", "remove"})
-     *
      */
     private $client;
 
@@ -65,7 +62,6 @@ class Panier
 
         return $this;
     }
-
 
     public function removeProduit(Produit $produit): self
     {

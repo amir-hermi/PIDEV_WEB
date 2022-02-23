@@ -2532,7 +2532,7 @@ table.timetable_sub {
     border:1px solid #CDCDCD;
 }
 td.invert-image a img {
-    width:10%;
+    width:30%;
     margin: 0 auto;
 }
 .rem{
@@ -3950,7 +3950,7 @@ td.invert-image a img {
         left: -1% !important;
     }
     td.invert-image a img {
-        width: 15%;
+        width: 45%;
     }
     .color-quality-left {
         float: none;
