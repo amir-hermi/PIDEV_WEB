@@ -10,6 +10,8 @@
     <meta name="author" content="">
 
     <title>Admin -{% block title%} Dashboard {% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.0/main.min.css" integrity="sha256-uq9PNlMzB+1h01Ij9cx7zeE2OR2pLAfRw3uUUOOPKdA=" crossorigin="anonymous">
+    {% block stylesheets %}{% endblock %}
 
     <!-- Custom fonts for this template-->
     {% block css %}
@@ -59,6 +61,19 @@
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Liste des clients</span></a>
     </li>
+
+    <li class="nav-item{% block activeLIV%} {% endblock %}">
+        <a class="nav-link" href="{{ path('listLivreur') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Liste des Livreur</span></a>
+    </li>
+
+    <li class="nav-item{% block activeFR%} {% endblock %}">
+        <a class="nav-link" href="{{ path('listFournisseur') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Liste des Fournisseur</span></a>
+    </li>
+
     <li class="nav-item{% block activeP%} {% endblock %}">
         <a class="nav-link" href="{{ path('listproduit') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -338,7 +353,8 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ app.user.username }}
+                               </span>
                             <img class="img-profile rounded-circle"
                                  src="{{ asset('adminStyle/img/undraw_profile.svg') }}">
                         </a>
@@ -391,7 +407,9 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Earnings (Monthly)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -429,7 +447,7 @@
                                         </div>
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">55</div>
                                             </div>
                                             <div class="col">
                                                 <div class="progress progress-sm mr-2">
@@ -740,12 +758,13 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+                <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout</a>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.0/main.min.js" integrity="sha256-DBxkGZLxKsLKhz054qUpBqtotG00r9AELGpSigJujLg=" crossorigin="anonymous"></script>
 {% block js %}
 <!-- Bootstrap core JavaScript-->
 <script src="{{ asset('adminStyle/vendor/jquery/jquery.min.js') }}"></script>

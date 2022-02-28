@@ -19,14 +19,19 @@ class ProductsController extends AbstractController
      * @Route("/products", name="products")
      */
     public function index( PanierRepository $panierRepository,ProduitRepository $repository): Response
+
     {
-        $d = $panierRepository->findBy(['client'=>1])[0];
+        $sum=0;
+        $total=0;
+        $utilisateur = $this->getUser();
+        if ($utilisateur) {
+        $d = $panierRepository->findBy(['utilisateur' => $utilisateur->getId()])[0];
         $sum = $d->getProduits()->count();
         $dataTarray = $d->getProduits()->toArray();
-        $total=0.0;
-        foreach ($dataTarray as $p){
+        foreach ($dataTarray as $p) {
             $total += ($p->getPrix() * $p->getQuantite());
         }
+    }
         $data = $repository->findAll();
         return $this->render('products/index.html.twig', [
             'data' => $data,'sumP'=>$sum , 'total'=>$total
@@ -38,7 +43,8 @@ class ProductsController extends AbstractController
      */
     public function detailleProduit(PanierRepository $panierRepository,$id , ProduitRepository $repository,Request $request): Response
     {
-        $d = $panierRepository->findBy(['client'=>1])[0];
+        $utilisateur = $this->getUser();
+        $d = $panierRepository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
         $sum = $d->getProduits()->count();
         $dataTarray = $d->getProduits()->toArray();
         $total=0.0;

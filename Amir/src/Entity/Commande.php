@@ -46,16 +46,17 @@ class Commande
      */
     private $reference;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="commande")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private $client;
+
 
     /**
      * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="commande" , cascade={"persist", "remove"})
      */
     private $commandeProduits;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="commandes")
+     */
+    private $utilisateur;
 
     public function __construct()
     {
@@ -131,17 +132,7 @@ class Commande
         return $this;
     }
 
-    public function getClient(): ?Client
-    {
-        return $this->client;
-    }
 
-    public function setClient(?Client $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
 
     /**
      * @return Collection|CommandeProduit[]
@@ -169,6 +160,18 @@ class Commande
                 $commandeProduit->setCommande(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }

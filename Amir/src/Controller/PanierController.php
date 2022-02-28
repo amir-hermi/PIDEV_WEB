@@ -8,6 +8,8 @@ use App\Entity\CommandeProduit;
 use App\Entity\Panier;
 use App\Entity\Produit;
 use App\Repository\CommandeProduitRepository;
+use App\Repository\UtilisateurRepository;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\String\ByteString;
 use App\Repository\ClientRepository;
 use App\Repository\CommandeRepository;
@@ -32,36 +34,48 @@ class PanierController extends AbstractController
      */
     public function index(PanierRepository $repository , Request $request): Response
     {
-        $d = $repository->findBy(['client'=>1])[0];
-        $sum = $d->getProduits()->count();
-        $data = $d->getProduits()->toArray();
-        $total=0.0;
-        foreach ($data as $p){
-            $total += ($p->getPrix() * $p->getQuantite());
-        }
-        //$newPanier = new Panier();
-        $form = $this->createFormBuilder($d)
-           // ->add("client",EntityType::class, ['class'=> Client::class, 'choice_label' => 'nom'])
-            ->add('produits',EntityType::class,[
-                'class'=>Produit::class,
-                'choice_label'=>'image',
-                'multiple'=>true,
-                'mapped'=>false,
-])
-            ->add("Ajouter",SubmitType::class)
-            ->getForm();
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid() ) {
-            $em = $this->getDoctrine()->getManager();
-            foreach ($request->request->get('form')['produits'] as $PID){
-                $produit = $this->getDoctrine()->getRepository(Produit::class)->find($PID);
-                $d->addProduit($produit);
-                $em->flush();
+        $total=0;
+        $data=[];
+        $sum=0;
+        $utilisateur = $this->getUser();
+       // $this->addFlash();
+            $d = $repository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
+            $sum = $d->getProduits()->count();
+            $data = $d->getProduits()->toArray();
+            foreach ($data as $p){
+                $total += ($p->getPrix() * $p->getQuantite());
             }
-           // dd($newPanier->getProduits());
+            //choisir un produit
+            //$newPanier = new Panier();
+            $form = $this->createFormBuilder($d)
+                // ->add("client",EntityType::class, ['class'=> Client::class, 'choice_label' => 'nom'])
+                ->add('produits',EntityType::class,[
+                    'class'=>Produit::class,
+                    'choice_label'=>'image',
+                    'multiple'=>true,
+                    'mapped'=>false,
+                ])
+                ->add("Ajouter",SubmitType::class)
+                ->getForm();
+            $form->handleRequest($request);
+            if($form->isSubmitted() && $form->isValid() ) {
+                $this->addFlash(
+                    'addProduit',
+                    'Produit ajouter avec success !'
+                );
+                $em = $this->getDoctrine()->getManager();
+                foreach ($request->request->get('form')['produits'] as $PID){
+                    $produit = $this->getDoctrine()->getRepository(Produit::class)->find($PID);
+                    $d->addProduit($produit);
+                    $em->flush();
+                }
+                // dd($newPanier->getProduits());
 
-             //$em->persist($newPanier);
-            $em->flush();
+                //$em->persist($newPanier);
+                $em->flush();
+
+
+
             return $this->redirectToRoute('panier');
         }
 
@@ -74,43 +88,59 @@ class PanierController extends AbstractController
      * @Route("/panierToCommande{idClient}", name="panierToCommande")
      */
 
-    public function panierToCommande(CommandeProduitRepository $commandeProduitRepository,ProduitRepository $produitRepository,ClientRepository $clientRepository,$idClient ,PanierRepository $repository, Request $request): Response
+    public function panierToCommande( Session $session,CommandeProduitRepository $commandeProduitRepository,ProduitRepository $produitRepository,UtilisateurRepository $clientRepository,$idClient ,PanierRepository $repository, Request $request): Response
     {
-
+        $utilisateur = $this->getUser();
         $newCommande = new Commande();
-        $prixTot=0;
-        $panier = $repository->findBy(['client' => $idClient])[0];
-        foreach($panier->getProduits()->toArray() as $p){
-            $pr = $produitRepository->find($p->getId());
-            $prixTot =$prixTot+ $pr->getPrix();
+        $prixTot = 0;
+        $panier = $repository->findBy(['utilisateur' => $utilisateur->getId()])[0];
+        if ($panier->getProduits()->toArray() == []) {
+           // $session->set('empty', 'Remplir votre panier avant de passer une commande !');
+           //$session->getFlashBag()->add('empty', 'Remplir votre panier avant de passer une commande !');
+            $this->addFlash(
+                'empty',
+                'Remplir votre panier avant de passer une commande !'
+            );
+            return $this->redirectToRoute('panier');
+        } else {
+            foreach ($panier->getProduits()->toArray() as $p) {
+
+                $pr = $produitRepository->find($p->getId());
+                $prixTot = $prixTot + $pr->getPrix();
+            }
+            $newCommande->setUtilisateur($clientRepository->find($utilisateur->getId()));
+            $newCommande->setStatus("En Attente");
+            $newCommande->setReference(random_bytes(10));
+            $newCommande->setMontant($prixTot);
+            $newCommande->setDateCreation(new \DateTime());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($newCommande);
+            foreach ($panier->getProduits()->toArray() as $p) {
+                $pr = $produitRepository->find($p->getId());
+                $commandeProduit = new CommandeProduit();
+                $commandeProduit->setCommande($newCommande);
+                $commandeProduit->setProduit($pr);
+                $commandeProduit->setQuantiteProduit($pr->getQuantite());
+                $em->persist($commandeProduit);
+                $newCommande->addCommandeProduit($commandeProduit);
+                $pr->setQuantite(1);
+                $panier->removeProduit($p);
+            }
+            $this->addFlash(
+                'addCommande',
+                'Votre commande a été crée avec succes, en attendant la confirmation par téléphone'
+            );
+            $em->flush();
+            return $this->redirectToRoute('commande');
         }
-        $newCommande->setClient($clientRepository->find($idClient));
-        $newCommande->setStatus("En Attente");
-        $newCommande->setReference(random_bytes(10));
-        $newCommande->setMontant($prixTot);
-        $newCommande->setDateCreation(new \DateTime());
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($newCommande);
-        foreach($panier->getProduits()->toArray() as $p){
-            $pr = $produitRepository->find($p->getId());
-            $commandeProduit = new CommandeProduit();
-            $commandeProduit->setCommande($newCommande);
-            $commandeProduit->setProduit($pr);
-            $commandeProduit->setQuantiteProduit($pr->getQuantite());
-            $em->persist($commandeProduit);
-            $newCommande->addCommandeProduit($commandeProduit);
-            $pr->setQuantite(1);
-            $panier->removeProduit($p);
-        }
-        $em->flush();
-        return $this->redirectToRoute('commande');
     }
     /**
      * @Route("/removeP{id}", name="removeP")
      */
     public function removeP( $id,PanierRepository $repository , Request $request): Response
     {
-        $d = $repository->findBy(['client'=>1])[0];
+        $utilisateur = $this->getUser();
+        $d = $repository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
             $em = $this->getDoctrine()->getManager();
                 $produit = $this->getDoctrine()->getRepository(Produit::class)->find($id);
                 $d->removeProduit($produit);

@@ -29,10 +29,11 @@ class Panier
     private $produits;
 
     /**
-     * @ORM\OneToOne(targetEntity=Client::class, inversedBy="panier", cascade={"persist", "remove"})
-     *
+     * @ORM\OneToOne(targetEntity=Utilisateur::class, inversedBy="panier", cascade={"persist", "remove"})
      */
-    private $client;
+    private $utilisateur;
+
+
 
 
 
@@ -76,15 +77,17 @@ class Panier
         return $this;
     }
 
-    public function getClient(): ?client
+    public function getUtilisateur(): ?utilisateur
     {
-        return $this->client;
+        return $this->utilisateur;
     }
 
-    public function setClient(?client $client): self
+    public function setUtilisateur(?utilisateur $utilisateur): self
     {
-        $this->client = $client;
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
+
+
 }

@@ -3,7 +3,7 @@ Author: W3layouts
 Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
--->{% set sum = sumP %}
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +18,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     <!-- //for-mobile-apps -->
     {% block css %}
     <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css" media="all" />
-    <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css" media="all" />
     <link href="{{ asset('css/fasthover.css') }}" rel="stylesheet" type="text/css" media="all" />
         <link href='//fonts.googleapis.com/css?family=Glegoo:400,700' rel='stylesheet' type='text/css'>
         <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -88,6 +88,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                     </div>
                                 </div>
 
+
                                 <div class="tab-2 resp-tab-content" aria-labelledby="tab_item-1">
                                     <div class="facts">
                                         <div class="register">
@@ -140,16 +141,41 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     </div>
 </div>
     {% block ShowLogin %}
-<script>
-    $('#myModal88').modal('show');
-</script>
+
         {% endblock %}
 <div class="header">
-    <div class="container">
 
-        <div class="w3l_login">
-            <a href="#" data-toggle="modal" data-target="#myModal88"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
-        </div>
+    <div class="container">
+        {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a class="btn btn-outline-warning" href="{{ path('administrateur') }}">Page admin</a>
+            {% endif %}
+            <ul class="cart-inner-info">
+
+                <li class="galssescart galssescart2 cart cart box_1">
+                    <form action="{{ path('updateprofile',{'idP' :app.user.id}) }}" method="post" class="last">
+                        <input type="hidden" name="cmd" value="_cart">
+                        <input type="hidden" name="display" value="1">
+                        <button class="top_googles_cart" type="submit" name="submit" value="" href="">
+                            <h6>Profile</h6>
+                            <img class="rounded-circle" src="{{ asset('adminStyle/img/undraw_profile_2.svg') }}"
+                                 alt="...">
+                            <div class="status-indicator"></div>
+                            <i class="fas fa-cart-arrow-down"></i>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+            <div>
+                Bonjour {{ app.user.username }} <a class="btn btn-sm btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
+
+            </div>
+        {% else %}
+            <div>
+                <a class="btn btn-sm btn-primary" href="{{ path('utilisateur_new') }}">S'inscrire</a>
+                <a class="btn btn-sm btn-success" href="{{ path('app_login') }}">Se connecter</a>
+            </div>
+        {% endif %}
         <div class="w3l_logo">
             <h1><a href="{{ path('home') }}">SportTech<span>For sport Lovers </span></a></h1>
         </div>
@@ -163,16 +189,22 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 </form>
             </div>
         </div>
+        {% if app.user %}
+
+
         <div class="cart box_1">
-           {% block panier%} <a href="{{ path('panier') }}">
+            {% block variabls1 %}
+            {% set sum = sumP %}
+            <a href="{{ path('panier') }}">
                 <div class="total">
                     <span >{{ total }}.00</span> ({{sum}}</span> items)</div>
-                <img src="images/bag.png" alt="" />
+                <img src="{{ asset('images/bag.png') }}" alt="" />
             </a>
-            {%endblock %}
+            {% endblock %}
             <p><a href="javascript:;" class="simpleCart_empty">Empty Cart</a></p>
             <div class="clearfix"> </div>
         </div>
+        {% endif %}
         <div class="clearfix"> </div>
     </div>
 </div>
@@ -190,7 +222,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             </div>
             <div class="collapse navbar-collapse" id="bs-megadropdown-tabs">
                 <ul class="nav navbar-nav">
-                    <li ><a href="{{ path('home') }}"{% block actHome%}  {% endblock %}>Home</a></li>
+                    <li ><a href="{{ path('home') }}"{% block actHome%} class="act" {% endblock %}>Home</a></li>
                     <!-- Mega Menu -->
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% block actProduct%} {% endblock %}>Produits <b class="caret"></b></a>
@@ -200,27 +232,27 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                     <ul class="multi-column-dropdown">
                                         <h6>Hommes</h6>
                                         <li><a href="{{ path('products') }}">Dresses<span>New</span></a></li>
-                                        <li><a href="sweaters.html">Sweaters</a></li>
-                                        <li><a href="skirts.html">Shorts & Skirts</a></li>
-                                        <li><a href="jeans.html">Jeans</a></li>
-                                        <li><a href="shirts.html">Shirts & Tops<span>New</span></a></li>
+                                        <li><a href="{{ asset('sweaters.html') }}">Sweaters</a></li>
+                                        <li><a href="{{ asset('skirts.html') }}">Shorts & Skirts</a></li>
+                                        <li><a href="{{ asset('jeans.html') }}">Jeans</a></li>
+                                        <li><a href="{{ asset('shirts.html') }}">Shirts & Tops<span>New</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="col-sm-3">
                                     <ul class="multi-column-dropdown">
                                         <h6>Femmes</h6>
-                                        <li><a href="salwars.html">Salwars</a></li>
-                                        <li><a href="sarees.html">Sarees<span>New</span></a></li>
-                                        <li><a href="products.html"><i>Summer Store</i></a></li>
+                                        <li><a href="{{ asset('salwars.html') }}">Salwars</a></li>
+                                        <li><a href="{{ asset('sarees.html') }}">Sarees<span>New</span></a></li>
+                                        <li><a href="{{ asset('products.html') }}"><i>Summer Store</i></a></li>
                                     </ul>
                                 </div>
                                 <div class="col-sm-3">
                                     <ul class="multi-column-dropdown">
                                         <h6>Materiel sport</h6>
-                                        <li><a href="sandals.html">Flats</a></li>
-                                        <li><a href="sandals.html">Sandals</a></li>
-                                        <li><a href="sandals.html">Boots</a></li>
-                                        <li><a href="sandals.html">Heels</a></li>
+                                        <li><a href="{{ asset('sandals.html') }}">Flats</a></li>
+                                        <li><a href="{{ asset('sandals.html') }}">Sandals</a></li>
+                                        <li><a href="{{ asset('sandals.html') }}">Boots</a></li>
+                                        <li><a href="{{ asset('sandals.html') }}">Heels</a></li>
                                     </ul>
                                 </div>
                                 <div class="col-sm-3">
@@ -239,8 +271,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </ul>
                     </li>
                     <li><a href="{{ path('about') }}"{% block actAbout%}  {% endblock %}>A propos de nous</a></li>
-                    <li><a href="{{ path('commande') }}"{% block actCommande%}  {% endblock %}>Commandes</a></li>
+                    <li>
+                        <a href="{{ path('commande') }}"{% block actCommande%}  {% endblock %}>
+                            Commandes
+                        </a>
+                    </li>
                     <li><a href="{{ path('reclamation') }}"{% block actRec %}  {% endblock %}>Reclamation</a></li>
+                    <li></li>
                 </ul>
             </div>
         </nav>
@@ -1130,7 +1167,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         <div class="w3agile_special_deals_grids">
             <div class="col-md-7 w3agile_special_deals_grid_left">
                 <div class="w3agile_special_deals_grid_left_grid">
-                    <img src="images/26.jpg" alt=" " class="img-responsive" />
+                    <img src="{{ asset('images/26.jpg') }}" alt=" " class="img-responsive" />
                     <div class="w3agile_special_deals_grid_left_grid_pos1">
                         <h5>30%<span>Off/-</span></h5>
                     </div>
@@ -1143,7 +1180,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <article style="position: absolute; width: 100%; opacity: 0;">
                             <div class="banner-wrap">
                                 <div class="w3agile_special_deals_grid_left_grid1">
-                                    <img src="images/1.png" alt=" " class="img-responsive" />
+                                    <img src="{{ asset('images/1.png') }}" alt=" " class="img-responsive" />
                                     <p>Quis autem vel eum iure reprehenderit qui in ea voluptate
                                         velit esse quam nihil molestiae consequatur, vel illum qui dolorem
                                         eum fugiat quo voluptas nulla pariatur</p>
@@ -1175,7 +1212,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </article>
                     </div>
                 </div>
-                <script src="js/jquery.wmuSlider.js"></script>
+                <script src="{{ asset('js/jquery.wmuSlider.js') }}"></script>
                 <script>
                     $('.example1').wmuSlider();
                 </script>
@@ -1432,13 +1469,14 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         </div>
     </div>
     <div class="footer-copy">
+
         <div class="footer-copy1">
             <div class="footer-copy-pos">
-                <a href="#home1" class="scroll"><img src="images/arrow.png" alt=" " class="img-responsive" /></a>
+                <a href="{{ path('utilisateur_new') }}" class="scroll"><img src="{{ asset('images/arrow.png') }}" alt=" " class="img-responsive" /></a>
             </div>
         </div>
         <div class="container">
-            <p>&copy; 2016 Women's Fashion. All rights reserved | Design by <a href="http://w3layouts.com/">W3layouts</a></p>
+            <p>&copy; SportTech@2022-esprit.tn &copy;</p>
         </div>
     </div>
 </div>

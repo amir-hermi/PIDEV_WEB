@@ -54,10 +54,10 @@
                         {% for i in data %}
                         <tr>
                             <td>{{ i.id }}</td>
-                            <td>{%for a in  i.produits %}
-                                    {{ a.nom }}
+                            <td>{%for a in i.getCommandeProduits().toArray()    %}
+                                    {{ a.getProduit().nom }}
                                 {% endfor %}</td>
-                            <td>{{ i.client.nom }}</td>
+                            <td>{{ i.utilisateur.username }}</td>
                             <td> jsk,</td>
                             <td>{{ i.montant }}
                             </td>

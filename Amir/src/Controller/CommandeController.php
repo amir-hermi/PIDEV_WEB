@@ -23,14 +23,21 @@ class CommandeController extends AbstractController
      */
     public function index(Request $req ,PanierRepository $panierRepository, CommandeRepository $repository): Response
     {
-        $data = $repository->findBy(['client'=>1]);
-        $d = $panierRepository->findBy(['client'=>1])[0];
-        $sum = $d->getProduits()->count();
-        $dataTarray = $d->getProduits()->toArray();
-        $total=0.0;
-        foreach ($dataTarray as $p){
-            $total += ($p->getPrix() * $p->getQuantite());
+        $total=0;
+        $sum=0;
+        $data=[];
+        $utilisateur = $this->getUser();
+        if($utilisateur)
+        {
+            $data = $repository->findBy(['utilisateur'=>$utilisateur->getId()]);
+            $d = $panierRepository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
+            $sum = $d->getProduits()->count();
+            $dataTarray = $d->getProduits()->toArray();
+            foreach ($dataTarray as $p){
+                $total += ($p->getPrix() * $p->getQuantite());
+            }
         }
+
         return $this->render('commande/index.html.twig', [
             'data'=>$data , 'sumP'=>$sum , 'total'=>$total
         ]);

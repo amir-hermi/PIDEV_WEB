@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block actCommande%} class="act" {% endblock %}
+{% block actHome%}{% endblock %}
+
 {% block banner %}
     <!-- banner -->
     <div class="banner10" id="home1">
@@ -62,13 +64,15 @@
                            <tr>
                                <th>REF</th>
                                <th>Liste des produits</th>
-                               <th>Montant</th>
+                               <th>Montant Totale</th>
                                <th>Date de creation</th>
                                <th>Etat de livraison</th>
-                               <th>Remove</th>
                            </tr>
                            </thead>
-
+                           {%  for message in app.flashes('addCommande')  %}
+                               <div class="alert alert-success" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
                            {% for i in data %}
                            <tr class="rem1">
                                <td class="invert">{{ i.reference }}</td>
@@ -84,14 +88,7 @@
                                </td>
                                <td class="invert"> {{ i.getDateCreation().format('j-m-y') }}</td>
                                <td class="invert">{{ i.status }}</td>
-                               <td class="invert">
-                                   <div class="rem">
-                                       <a href="{{ path('commandeDelete',{'id':i.id}) }}">
-                                       <div class="close1"> </div>
-                                       </a>
-                                   </div>
 
-                               </td>
                            </tr>
                            {% endfor %}
 
