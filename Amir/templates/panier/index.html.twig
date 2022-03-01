@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block actHome%}{% endblock %}
+{% block title %} Panier {% endblock %}
 {% set prod = {} %}
 {% for i in data %}
 
-        {%  set prod = prod|merge([i.id]) %}
-    {% endfor %}
+    {%  set prod = prod|merge([i.id]) %}
+{% endfor %}
 {% set count=0 %}
 {% block banner %}
 
@@ -30,34 +31,7 @@
 {% block ShowLogin %}
 {% endblock %}
        {% block body %}
-           <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
-               function hideURLbar(){ window.scrollTo(0,1); } </script>
-           <!-- //for-mobile-apps -->
-           <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-           <link href="css/style.css" rel="stylesheet" type="text/cs
 
-           s" media="all" />
-           <link href="css/fasthover.css" rel="stylesheet" type="text/css" media="all" />
-           <!-- js -->
-           <script src="js/jquery.min.js"></script>
-           <!-- //js -->
-           <!-- cart -->
-           <script src="js/simpleCart.min.js"></script>
-           <!-- cart -->
-           <!-- for bootstrap working -->
-           <script type="text/javascript" src="js/bootstrap-3.1.1.min.js"></script>
-           <!-- //for bootstrap working -->
-           <link href='//fonts.googleapis.com/css?family=Glegoo:400,700' rel='stylesheet' type='text/css'>
-           <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
-           <!-- start-smooth-scrolling -->
-           <script type="text/javascript">
-               jQuery(document).ready(function($) {
-                   $(".scroll").click(function(event){
-                       event.preventDefault();
-                       $('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
-                   });
-               });
-           </script>
            <!-- //end-smooth-scrolling -->
 
            <!-- checkout -->
@@ -78,6 +52,10 @@
                                <th>Action</th>
                            </tr>
                            </thead>
+                           {%  for message in app.flashes('delP')  %}
+                               <div class="alert alert-success" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
                            {%  for message in app.flashes('empty')  %}
                                <div class="alert alert-danger" role="alert">
                                    {{message}}                               </div>
@@ -91,32 +69,32 @@
 
 
                                <tr class="rem1">
-                               <td class="invert">{{ count }}</td>
-                               <td class="invert-image"><a href="{{ path('detailleProduit',{id : i.id}) }}"><img src={{ i.image}} alt="" class="img-responsive" /></a></td>
-                               <td class="invert">
-                                   <div class="quantity">
-                                       {{ i.quantite }}<br>
+                                   <td class="invert">{{ count }}</td>
+                                   <td class="invert-image"><a href="{{ path('detailleproduit',{id : i.id}) }}"><img src={{ i.image}} alt="" class="img-responsive" /></a></td>
+                                   <td class="invert">
+                                       <div class="quantity">
+                                           {{ i.quantite }}<br>
 
-                                   </div>
-                               </td>
-                               <td class="invert">
+                                       </div>
+                                   </td>
+                                   <td class="invert">
                                        {{ i.nom}}
-                               <td class="invert">
+                                   <td class="invert">
                                        {{ i.taille}}
                                    </td>
-                               <td class="invert">
+                                   <td class="invert">
 
                                        {{ i.prix }}$
 
-                               </td>
-                               <td class="invert">
-                                  <a href="{{ path('removeP',{id : i.id}) }}">
-                                   <div class="rem">
-                                       <div class="close1"> </div>
-                                   </div>
-                                  </a>
-                               </td>
-                           </tr>
+                                   </td>
+                                   <td class="invert">
+                                       <a href="{{ path('removeP',{id : i.id}) }}">
+                                           <div class="rem">
+                                               <div class="close1"> </div>
+                                           </div>
+                                       </a>
+                                   </td>
+                               </tr>
 
                            {% endfor %}
                        </table>
@@ -125,26 +103,20 @@
                        <div class="checkout-left-basket">
                            <h4>Continue to basket</h4>
                            <ul>{% for i in data %}
-                               <li>{{ i.nom }} <i>- {{ i.quantite }}</i> <span>{{i.prix * i.quantite}}.00 DT</span></li>
+                                   <li>{{ i.nom }} <i>- {{ i.quantite }}</i> <span>{{i.prix * i.quantite}}.00 DT</span></li>
                                {% endfor %}
                                <li>Frait de livraison <i>-</i> <span>7.00DT</span></li>
                                <li>Total <i>-</i> <span>{{ total + 7.00 }}.00</span></li>
                            </ul>
                            <br>
                            <h4>Mode de payement</h4>
-                           <select class="form-select" aria-label="Default select example">
-                               <option value="1">Espece</option>
-                               <option value="2">Carte bancaire</option>
+                           <br>
 
-                           </select>
-                           <br><br>
-
-                           <a href="{{ path('panierToCommande',{ idClient:1  }) }}" class="btn btn-success"><span aria-hidden="true"></span>Commander</a>
+                           <a href="{{ path('checkP') }}" class="btn btn-warning"><span aria-hidden="true"></span><h5>Continuer</h5></a>
                        </div>
                        <div class="checkout-right-basket">
                            <a href="{{ path('products') }}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
-<br><br>
-                           {{ form(formP) }}
+                           <br><br>
                        </div>
 
                        <div class="clearfix"> </div>

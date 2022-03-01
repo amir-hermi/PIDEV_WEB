@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PanierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,6 +17,7 @@ class Panier
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("panier")
      */
     private $id;
 
@@ -25,11 +27,13 @@ class Panier
      * @ORM\ManyToMany(targetEntity=Produit::class, mappedBy="panier")
      * @ORM\JoinTable(name="panierproduit")
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("panier")
      */
     private $produits;
 
     /**
      * @ORM\OneToOne(targetEntity=Utilisateur::class, inversedBy="panier", cascade={"persist", "remove"})
+     * @Groups("panier")
      */
     private $utilisateur;
 

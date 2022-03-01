@@ -5,7 +5,11 @@ namespace App\Entity;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Endroid\QrCode\Builder\BuilderInterface;
+use Endroid\QrCodeBundle\Response\QrCodeResponse;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,16 +21,19 @@ class Commande
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"commande"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups({"commande"})
      */
     private $date_creation;
 
     /**
      * @ORM\Column(type="string", length=255 , columnDefinition="ENUM('Confirmée', 'Annulée','En attente','En cours de preparation','Livraison en cours','livrée')")
+     * @Groups({"commande"})
      */
     private $status;
 
@@ -34,6 +41,7 @@ class Commande
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"commande"})
      */
     private $montant;
 
@@ -43,6 +51,7 @@ class Commande
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"commande"})
      */
     private $reference;
 
@@ -50,16 +59,20 @@ class Commande
 
     /**
      * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="commande" , cascade={"persist", "remove"})
+     * @Groups({"commande"})
      */
     private $commandeProduits;
 
     /**
      * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="commandes")
+     * @Groups({"commande","utilisateur"})
      */
     private $utilisateur;
 
     public function __construct()
     {
+
+
         $this->date_creation = date_create();
         $this->commandeProduits = new ArrayCollection();
     }

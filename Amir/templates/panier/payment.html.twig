@@ -1,0 +1,79 @@
+
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<div class="container" style="margin-top: 60px">
+    <div class="row">
+        <div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3">
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <address>
+                        <strong>SPORTECH</strong>
+                        <br>
+                        2135 Sunset Blvd
+                        <br>
+                        Los Angeles, CA 90026
+                        <br>
+                        <abbr title="Phone">P:</abbr> (213) 484-6829
+                    </address>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                    <p>
+                        <em>Date: 1st November, 2013</em>
+                    </p>
+                    <p>
+                        <em>Receipt #: 34522677W</em>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <h1>Commande</h1>
+                </div>
+                </span>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>QTE</th>
+                        <th class="text-center">Prix</th>
+                        <th class="text-center">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in data %}
+                    <tr>
+                        <td class="col-md-9"><em>{{ i.nom}}</em></h4></td>
+                        <td class="col-md-1" style="text-align: center">  {{ i.quantite }} </td>
+                        <td class="col-md-1 text-center">{{ i.prix }}DT</td>
+                        <td class="col-md-1 text-center">{{i.prix * i.quantite}}.00 DT</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td class=" text-success"><strong>Frait de livraison</strong> </td>
+                        <td> </td>
+                        <td> </td>
+                        <td class=" text-success"><strong>7.00DT </strong> </td>
+                    </tr>
+
+                    <tr>
+                        <td>  </td>
+                        <td>  </td>
+                        <td class="text-right"><h4><strong>Total: </strong></h4></td>
+                        <td class="text-center text-danger"><h4><strong>{{ total + 7.00 }}.00</strong></h4></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <a href="{{ path('checkout') }}" class="btn btn-success btn-lg btn-block">
+                    Carte bancaire<span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+                <a href="{{ path('panierToCommande') }}" class="btn btn-primary btn-lg btn-block">
+                    Espece<span class="glyphicon glyphicon-chevron-right"></span>
+                </a></td>
+            </div>
+        </div>
+    </div>
+</div>

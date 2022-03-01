@@ -32,7 +32,7 @@ class UtilisateurController extends AbstractController
         }
         else if(in_array('ROLE_USER', $utilisateur->getRoles())){
            if($utilisateur->getEtat()=="Bloquer"){
-               $this->addFlash('activer','vous etes bloquer ');
+               $this->addFlash('info', "formulaire non disponible");
                $session->set("message", "Merci de vous connecter");
              return  $this->redirectToRoute('app_logout');
            }

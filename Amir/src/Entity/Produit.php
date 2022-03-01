@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProduitRepository::class)
@@ -16,21 +18,27 @@ class Produit
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("produit")
      */
     private $id;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups("produit")
      */
     private $prix;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("produit")
      */
     private $image;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotBlank(message="la quantite est obligatoire")
+     * @Assert\Positive(message="quantite invalid")
+     * @Groups("produit")
      */
     private $quantite;
 
@@ -38,6 +46,7 @@ class Produit
      * @ORM\ManyToMany(targetEntity=Panier::class, inversedBy="produits")
      * @ORM\JoinTable(name="panierproduit")
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
      */
     private $panier;
 
@@ -45,19 +54,25 @@ class Produit
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("produit")
      */
     private $nom;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $taille;
+
 
     /**
      * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="produit" , cascade={"persist", "remove"})
      * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
      */
     private $commandeProduits;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="la taille est obligatoire")
+     * @Groups("produit")
+     */
+    private $taille;
 
     public function __construct()
     {
@@ -144,17 +159,7 @@ class Produit
         return $this;
     }
 
-    public function getTaille(): ?float
-    {
-        return $this->taille;
-    }
 
-    public function setTaille(float $taille): self
-    {
-        $this->taille = $taille;
-
-        return $this;
-    }
 
     /**
      * @return Collection|CommandeProduit[]
@@ -182,6 +187,18 @@ class Produit
                 $commandeProduit->setProduit(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTaille(): ?string
+    {
+        return $this->taille;
+    }
+
+    public function setTaille(?string $taille): self
+    {
+        $this->taille = $taille;
 
         return $this;
     }
