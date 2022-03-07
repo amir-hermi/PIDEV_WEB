@@ -1,0 +1,202 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block activeC %} active {% endblock %}
+{% block title %}Hello AdministrateurController!{% endblock %}
+{% block css %}
+    <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ asset('adminStyle/css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+  <div class="row">
+      <div class="col-md-7 "></div>
+      <div class="col-md-2">
+          <select class="filtre" aria-label="Default select example">
+              <option value="En attente">En attente</option>
+              <option value="Acceptée">Acceptée</option>
+              <option value="Annulée">Annulée</option>
+              <option value="En cours de preparation">En cours de preparation </option>
+              <option value="Livraison en cours">Livraison en cours</option>
+              <option value="Livraison en cours">Livraison en cours</option>
+              <option value="Livrée">Livrée</option>
+          </select>
+      </div>
+      <div class="col-md-3">
+    <form method="post"
+            class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+        <div class="input-group">
+            <input type="text" name="recherche" class="form-control bg-light border-0 small" placeholder="Search for..."
+                   aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+      </div>
+  </div>
+    <div class="container-fluid">
+
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-2 text-gray-800">Liste des Commandes</h1>
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        {%  for message in app.flashes('updateStatus')  %}
+                            <div class="alert alert-success" role="alert">
+                                {{message}}                               </div>
+                        {% endfor %}
+                        <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Liste des produits</th>
+                            <th>Nom de client</th>
+                            <th>Telephone</th>
+                            <th>Montant</th>
+                            <th>Date de creation</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Liste des produits</th>
+                            <th>Nom de client</th>
+                            <th>Telephone</th>
+                            <th>Montant</th>
+                            <th>Date de creation</th>
+                            <th>Status</th>
+                            <th><script>getValue()</script></th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for i in data %}
+
+                        <tr>
+                            <td>{{ i.reference }}</td>
+                            <td> <a href="#" data-toggle="modal" data-target="#myModal9{{ i.id }}">List des produits</a>
+                            </td>
+                            <td>{{ i.utilisateur.username }}</td>
+                            <td>{{ i.utilisateur.tel }}</td>
+                            <td>{{ i.montant }}
+                            </td>
+                            <td>{{ i.getDateCreation().format('j-m-y') }}</td>
+                            <td>
+                                {% if i.status == "En attente" %}
+                                <span class="badge badge-secondary">{{ i.status }}</span>
+                                {% elseif i.status == "Confirmée" %}
+                                    <span class="badge badge-success">{{ i.status }}</span>
+                                    {% elseif i.status == "Annulée" %}
+                                        <span class="badge badge-danger">{{ i.status }}</span>
+                                        {% elseif i.status == "En cours de preparation" %}
+                                            <span class="badge badge-warning">{{ i.status }}</span>
+                                        {% elseif i.status == "Livraison en cours" %}
+                                            <span class="badge badge-warning">{{ i.status }}</span>
+                                        {% elseif i.status == "livrée" %}
+                                            <span class="badge badge-success">{{ i.status }}</span>
+                                            {% endif %}
+                                <select id="status{{ i.id }}" onchange="getValue{{ i.id }}() " style="width:15px ; border-radius: 50px">
+                                    <option value="En_attente">En attente</option>
+                                    <option value="Confirmée">Confirmée</option>
+                                    <option value="Annulée">Annulée</option>
+                                    <option value="En_cours_de_preparation" >En cours de preparation</option>
+                                    <option value="Livraison_en_cours">Livraison en cours</option>
+                                    <option value="livrée">livrée</option>
+                                </select>
+                            </td>
+                            <td id="value{{ i.id }}">
+                                <script>
+                                    function getValue{{ i.id }}() {var v = document.getElementById("status{{ i.id }}").value;
+                                        var url = '{{ path('updateCommande',{'idP': i.id , 'value':'c' }) }}';
+                                        url = url.replace('c',v);
+                                        var text = '<a href='+url+' class="btn btn-warning btn-circle"> <i class="fas fa-pen"></i></a>'
+                                        document.getElementById("value{{ i.id }}").innerHTML=text;
+                                    }
+                                </script>
+                            </td>
+                        </tr>
+                            <div class="modal fade" id="myModal9{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="myModal9{{ i.id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <div class="text-center">
+                                                <br><br>
+                                                <h1>List des produits</h1>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-body">
+                                            <br><br>
+                                            <div class="row ">
+                                                <div class="col-md-3 bg-warning"><strong><h4>Produit</h4> </strong></div>
+                                                <div class="col-md-3 bg-warning"><strong><h4>QTE</h4></strong></div>
+                                                <div class="col-md-3 bg-warning"><strong><h4>Prix</h4></strong></div>
+                                                <div class="col-md-3 bg-warning"><strong><h4>Totale</h4></strong></div>
+                                            </div>
+                                            <br>
+                                            {% for a in  i.getCommandeProduits().toArray() %}
+                                                <div class="row">
+                                                    <div class="col-md-3 gray"><h5>{{ a.getProduit().nom}}</h5></div>
+                                                    <div class="col-md-3 gray">{{ a.quantiteProduit }}</div>
+                                                    <div class="col-md-3 gray">{{ a.getProduit().prix }}DT</div>
+                                                    <div class="col-md-3 gray">{{a.getProduit().prix * a.getProduit().quantite}}.00 DT</div>
+                                                </div>
+                                                <br>
+                                            {% endfor %}
+                                            <hr></hr>
+                                            <div class="row">
+                                                <div class="col-md-9"><strong>Frait de livraison</strong></div>
+                                                <div class="col-md-3 text-success"><strong>7.00DT</strong></div>
+                                                <br><br>
+                                                <div class="col-md-9"> </div>
+                                                <div class="col-md-3 text-danger"><h4><strong>Total:</strong></h4><h4><strong>{{ i.montant }}.00DT</strong></h4></div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    <div style="right: 0">{{ knp_pagination_render(data) }}</div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block js %}
+
+    <script src="{{ asset('adminStyle/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('adminStyle/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ asset('adminStyle/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ asset('adminStyle/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Page level plugins -->
+
+    <!-- Page level custom scripts -->
+{% endblock %}

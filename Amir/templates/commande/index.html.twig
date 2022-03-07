@@ -1,0 +1,223 @@
+{% extends 'base.html.twig' %}
+{% block actCommande%} class="act" {% endblock %}
+{% block title %} Commande {% endblock %}
+{% block actHome%}{% endblock %}
+
+{% block banner %}
+
+    <!-- banner -->
+    <div class="banner10" id="home1">
+        <div class="container">
+            <h2>Commandes</h2>
+        </div>
+    </div>
+    <!-- //banner -->
+
+    <!-- breadcrumbs -->
+    <div class="breadcrumb_dress">
+        <div class="container">
+            <ul>
+                <li><a href="{{ path('home') }}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a> <i>/</i></li>
+                <li>Commandes</li>
+            </ul>
+        </div>
+    </div>
+    <!-- //breadcrumbs -->
+{% endblock %}
+
+       {% block body %}
+
+           <!-- //end-smooth-scrolling -->
+           <!-- checkout -->
+           <div class="checkout">
+               <div class="container">
+
+                   <h3>Your Orders : <span> {{ data|length}} Orders</span></h3>
+
+                   <div class="checkout-right">
+                       <table class="timetable_sub">
+                           <thead>
+                           <tr>
+                               <th>REF</th>
+                               <th>Liste des produits</th>
+                               <th>Montant Totale</th>
+                               <th>Date de creation</th>
+                               <th>Etat de livraison</th>
+                               <th>QR Code</th>
+                           </tr>
+                           </thead>
+                           {%  for message in app.flashes('addCommande')  %}
+                               <div class="alert alert-success" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
+                           {% for i in data %}
+                               {% set listP = "" %}
+                               <tr class="rem1">
+                                   <td class="invert">{{ i.reference }}</td>
+                                   <td class="invert">
+
+                                       <a href="#" data-toggle="modal" data-target="#myModal9{{ i.id }}">List des produits</a>
+
+                                   </td>
+                                   <td class="invert">
+                                       <div class="quantity">
+                                           {{ i.montant }}DT
+                                       </div>
+                                   </td>
+                                   <td class="invert"> {{ i.getDateCreation().format('j-m-y') }}</td>
+                                   <td> {% if i.status == "En attente" %}
+                                           <span class="badge badge-secondary">{{ i.status }}</span>
+                                       {% elseif i.status == "Confirmée" %}
+                                           <span class="badge badge-success">{{ i.status }}</span>
+                                       {% elseif i.status == "Annulée" %}
+                                           <span class="badge badge-danger">{{ i.status }}</span>
+                                       {% elseif i.status == "En cours de preparation" %}
+                                           <span class="badge badge-warning">{{ i.status }}</span>
+                                       {% elseif i.status == "Livraison en cours" %}
+                                           <span class="badge badge-warning">{{ i.status }}</span>
+                                       {% elseif i.status == "livrée" %}
+                                           <span class="badge badge-success">{{ i.status }}</span>
+                                       {% endif %}</td>
+                                   {% for a in  i.getCommandeProduits().toArray() %}
+                                       {% set produits = "Nom = "~a.getProduit().nom~" => { QTE = "~a.quantiteProduit~" , Prix = "~a.getProduit().prix~"DT"~" , Prix total = "~a.getProduit().prix*a.quantiteProduit~"DT"~" }" %}
+                                       {% set listP = listP~produits %}
+                                   {% endfor %}
+                                   {% set arrayP = " , Produits : [ "~listP~" ] " %}
+                                   {% set qrData="reference du commande = "~i.reference~" , Montant Total = "~i.montant~"DT"~arrayP %}
+
+                                   <td class="invert"><img style="width: 100px" class="rounded mx-auto d-block" src="{{ qr_code_data_uri(qrData) }}" /></td>
+                               </tr>
+
+
+                               <div class="modal fade" id="myModal9{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="myModal9{{ i.id }}" aria-hidden="true">
+                                   <div class="modal-dialog" role="document">
+                                       <div class="modal-content">
+                                           <div class="modal-header">
+                                               <div class="text-center">
+                                                   <br><br>
+                                                   <h1>List des produits</h1>
+                                               </div>
+
+                                           </div>
+                                           <div class="modal-body">
+                                               <br><br>
+                                              <div class="row ">
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Produit</h4> </strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>QTE</h4></strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Prix</h4></strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Totale</h4></strong></div>
+                                               </div>
+                                               <br>
+                                               {% for a in  i.getCommandeProduits().toArray() %}
+                                               <div class="row">
+                                                   <div class="col-md-3 gray"><h5>{{ a.getProduit().nom}}</h5></div>
+                                                   <div class="col-md-3 gray">{{ a.quantiteProduit }}</div>
+                                                   <div class="col-md-3 gray">{{ a.getProduit().prix }}DT</div>
+                                                   <div class="col-md-3 gray">{{a.getProduit().prix * a.getProduit().quantite}}.00 DT</div>
+                                               </div>
+                                                   <br>
+                                               {% endfor %}
+                                                   <hr></hr>
+                                               <div class="row">
+                                                   <div class="col-md-9"><strong>Frait de livraison</strong></div>
+                                                   <div class="col-md-3 text-success"><strong>7.00DT</strong></div>
+                                                   <br><br>
+                                                   <div class="col-md-9"> </div>
+                                                   <div class="col-md-3 text-danger"><h4><strong>Total:</strong></h4><h4><strong>{{ i.montant }}.00DT</strong></h4></div>
+                                               </div>
+                                           </div>
+                                           <div class="modal-footer">
+                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+
+
+
+                           {% endfor %}
+
+                       </table>
+                       <div style="right: 0">{{ knp_pagination_render(data) }}</div>
+
+
+
+
+
+
+                   </div>
+               </div>
+
+               <div class="modal video-modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModal6">
+                   <div class="modal-dialog" role="document">
+                       <div class="modal-content">
+                           <div class="modal-header">
+                               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                           </div>
+                           <section>
+                               <div class="modal-body">
+                                   <div class="col-md-5 modal_body_left">
+                                       <img src="images/39.jpg" alt=" " class="img-responsive" />
+                                   </div>
+                                   <div class="col-md-7 modal_body_right">
+                                       <h4>a good look women's Long Skirt</h4>
+                                       <p>Ut enim ad minim veniam, quis nostrud
+                                           exercitation ullamco laboris nisi ut aliquip ex ea
+                                           commodo consequat.Duis aute irure dolor in
+                                           reprehenderit in voluptate velit esse cillum dolore
+                                           eu fugiat nulla pariatur. Excepteur sint occaecat
+                                           cupidatat non proident, sunt in culpa qui officia
+                                           deserunt mollit anim id est laborum.</p>
+                                       <div class="rating">
+                                           <div class="rating-left">
+                                               <img src="images/star-.png" alt=" " class="img-responsive" />
+                                           </div>
+                                           <div class="rating-left">
+                                               <img src="images/star-.png" alt=" " class="img-responsive" />
+                                           </div>
+                                           <div class="rating-left">
+                                               <img src="images/star-.png" alt=" " class="img-responsive" />
+                                           </div>
+                                           <div class="rating-left">
+                                               <img src="images/star.png" alt=" " class="img-responsive" />
+                                           </div>
+                                           <div class="rating-left">
+                                               <img src="images/star.png" alt=" " class="img-responsive" />
+                                           </div>
+                                           <div class="clearfix"> </div>
+                                       </div>
+                                       <div class="modal_body_right_cart simpleCart_shelfItem">
+                                           <p><span>$320</span> <i class="item_price">$250</i></p>
+                                           <p><a class="item_add" href="#">Add to cart</a></p>
+                                       </div>
+                                       <h5>Color</h5>
+                                       <div class="color-quality">
+                                           <ul>
+                                               <li><a href="#"><span></span>Red</a></li>
+                                               <li><a href="#" class="brown"><span></span>Yellow</a></li>
+                                               <li><a href="#" class="purple"><span></span>Purple</a></li>
+                                               <li><a href="#" class="gray"><span></span>Violet</a></li>
+                                           </ul>
+                                       </div>
+                                   </div>
+                                   <div class="clearfix"> </div>
+                               </div>
+                           </section>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <!-- //checkout -->
+       {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

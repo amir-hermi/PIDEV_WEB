@@ -1,0 +1,27 @@
+<h1 align="center">Fiche de Réclamation</h1>
+<hr>
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+    <thead>
+
+    <tr align="center">
+        <th>Réference</th>
+        <th>Date Reclamation</th>
+        <th>Type Reclamation</th>
+
+    </tr>
+    </thead>
+    <tfoot>
+
+    </tfoot>
+    <tbody>
+
+        <tr align="center">
+            <td>{{ data.id }}</td>
+            <td>{{ data.date |date('d-m-Y') }}</td>
+            <td>{{ data.categorieReclamation.type }}</td>
+
+        </tr>
+
+
+    </tbody>
+</table>

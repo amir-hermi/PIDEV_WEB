@@ -1,0 +1,54 @@
+<h1 align="center " style="color: #0f6848" >Fiche de Mission</h1>
+<hr>
+<br>
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+    <thead>
+
+    <tr align="center">
+        <th>Réference</th>
+        <th>Date Mission</th>
+        <th>Adresse Mission</th>
+        <th>Nom du Livreur</th>
+
+    </tr>
+    </thead>
+    <tfoot>
+
+    </tfoot>
+    <tbody>
+
+    <tr align="center">
+        <td>{{ data.id }}</td>
+        <td>{{ data.date |date('d-m-Y') }}</td>
+        <td>{{ data.adresse }}</td>
+        <td>{{ data.utilisateur.username }}</td>
+    </tr>
+
+
+    </tbody>
+</table>
+<br>
+<br>
+<h2 align="center" style="color: #0f6848">Liste des commandes</h2>
+<table  class="table table-bordered" width="100%" cellspacing="0">
+    <thead>
+    <tr  align="center">
+        <th> Reference </th>
+        <th> Nom de client </th>
+        <th> Num client </th>
+        <th> Montant </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for c in data.getCommandes().toArray() %}
+        <br>
+    <tr align="center">
+
+        <td> {{ c.reference }}</td>
+        <td> {{ c.utilisateur.username }} </td>
+        <td> {{ c.utilisateur.tel }}</td>
+        <td>{{ c.montant }} DT  </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

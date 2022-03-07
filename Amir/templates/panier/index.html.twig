@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+{% block actHome%}{% endblock %}
+{% block title %} Panier {% endblock %}
+{% set prod = {} %}
+{% for i in data %}
+
+    {%  set prod = prod|merge([i.id]) %}
+{% endfor %}
+{% set count=0 %}
+{% block banner %}
+
+    <!-- banner -->
+    <div class="banner10" id="home1">
+        <div class="container">
+            <h2>Panier</h2>
+        </div>
+    </div>
+    <!-- //banner -->
+
+    <!-- breadcrumbs -->
+    <div class="breadcrumb_dress">
+        <div class="container">
+            <ul>
+                <li><a href="{{ path('home') }}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a> <i>/</i></li>
+                <li>Panier</li>
+            </ul>
+        </div>
+    </div>
+    <!-- //breadcrumbs -->
+{% endblock %}
+{% block ShowLogin %}
+{% endblock %}
+       {% block body %}
+
+           <!-- //end-smooth-scrolling -->
+
+           <!-- checkout -->
+           <div class="checkout">
+               <div class="container">
+                   <h3>Your shopping cart contains: <span>{{ data|length}} Products</span></h3>
+
+                   <div class="checkout-right">
+                       <table class="timetable_sub">
+                           <thead>
+                           <tr>
+                               <th>SL No.</th>
+                               <th>Product</th>
+                               <th>Quantite</th>
+                               <th>Product Name</th>
+                               <th>Taille</th>
+                               <th>Price</th>
+                               <th>Action</th>
+                           </tr>
+                           </thead>
+                           {%  for message in app.flashes('delP')  %}
+                               <div class="alert alert-success" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
+                           {%  for message in app.flashes('empty')  %}
+                               <div class="alert alert-danger" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
+                           {%  for message in app.flashes('addProduit')  %}
+                               <div class="alert alert-success" role="alert">
+                                   {{message}}                               </div>
+                           {% endfor %}
+                           {% for i in data %}
+                               {% set count=count+1 %}
+
+
+                               <tr class="rem1">
+                                   <td class="invert">{{ count }}</td>
+                                   <td class="invert-image"><a href="{{ path('detailleproduit',{id : i.id}) }}"> <img src="{{ asset('images/'~asset(i.image ) ) }}" alt="" class="img-responsive" /></a></td>
+                                   <td class="invert">
+                                       <div class="quantity">
+                                           {{ i.quantite }}<br>
+
+                                       </div>
+                                   </td>
+                                   <td class="invert">
+                                       {{ i.nom}}
+                                   <td class="invert">
+                                       {{ i.taille}}
+                                   </td>
+                                   <td class="invert">
+
+                                       {{ i.prix }}DT
+
+                                   </td>
+                                   <td class="invert">
+                                       <a href="{{ path('removeP',{id : i.id}) }}">
+                                           <div class="rem">
+                                               <div class="close1"> </div>
+                                           </div>
+                                       </a>
+                                   </td>
+                               </tr>
+
+                           {% endfor %}
+
+                       </table>
+                       <div style="right: 0">{{ knp_pagination_render(data) }}</div>
+                   </div>
+                   <div class="checkout-left">
+                       <div class="checkout-left-basket">
+                           <h4>Continue to basket</h4>
+                           <ul>{% for i in data %}
+                                   <li>{{ i.nom }} <i>- {{ i.quantite }}</i> <span>{{i.prix * i.quantite}}.00 DT</span></li>
+                               {% endfor %}
+                               <li>Frait de livraison <i>-</i> <span>7.00DT</span></li>
+                               <li>Total <i>-</i> <span>{{ total + 7.00 }}.00</span></li>
+                           </ul>
+                           <br>
+                           <h4>Mode de payement</h4>
+                           <br>
+
+                           <a href="{{ path('checkP') }}" class="btn btn-warning"><span aria-hidden="true"></span><h5>Continuer</h5></a>
+                       </div>
+                       <div class="checkout-right-basket">
+                           <a href="{{ path('products') }}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
+                           <br><br>
+                       </div>
+
+                       <div class="clearfix"> </div>
+                   </div>
+               </div>
+           </div>
+
+
+           <!-- //checkout -->
+       {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
