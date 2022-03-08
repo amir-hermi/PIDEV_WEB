@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Repository\PanierRepository;
 use App\Repository\ProduitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +20,8 @@ class NavigationController extends AbstractController
      */
     public function home(Session $session)
     {
-        $return = [];
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+        $return = ['cat' => $categorie];
 
         if($session->has('message'))
         {

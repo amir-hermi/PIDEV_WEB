@@ -1,0 +1,54 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Mission{% endblock %}
+{% block content %}
+<div class="col-lg-6">
+
+    <!-- Dropdown Card Example -->
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div
+                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Nouvelle Mission</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                     aria-labelledby="dropdownMenuLink">
+
+                    <a class="dropdown-item" href="{{ path('listmission') }}">Liste des missions</a>
+
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+
+        <div class="card-body">
+
+            {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
+            {{ form_label(f.adresse,"Adresse Mission :") }}
+            {{ form_widget(f.adresse) }}
+            {{ form_errors(f.adresse) }}
+
+            {{ form_errors(f.date) }}
+
+            {{ form_errors(f.utilisateur) }}
+            {{ form_end(f) }}
+
+
+
+        </div>
+    </div>
+
+
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
+        {% endfor %}
+        {% endblock %}
+        {% block footer %}
+{% endblock %}

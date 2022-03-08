@@ -56,12 +56,7 @@
                                    <td class="invert">{{ i.reference }}</td>
                                    <td class="invert">
 
-                                       {% for a in  i.getCommandeProduits().toArray() %}
-
-                                           <b>Nom</b> : {{ a.getProduit().nom}} , <b>Quantite </b> : {{ a.quantiteProduit }} <br>
-                                           {% set produits = "Nom = "~a.getProduit().nom~" => { QTE = "~a.quantiteProduit~" , Prix = "~a.getProduit().prix~"DT"~" , Prix total = "~a.getProduit().prix*a.quantiteProduit~"DT"~" }" %}
-                                           {% set listP = listP~produits %}
-                                       {% endfor %}
+                                       <a href="#" data-toggle="modal" data-target="#myModal9{{ i.id }}">List des produits</a>
 
                                    </td>
                                    <td class="invert">
@@ -70,14 +65,82 @@
                                        </div>
                                    </td>
                                    <td class="invert"> {{ i.getDateCreation().format('j-m-y') }}</td>
-                                   <td>{{ i.status }}</td>
+                                   <td> {% if i.status == "En attente" %}
+                                           <span class="badge badge-secondary">{{ i.status }}</span>
+                                       {% elseif i.status == "Confirmée" %}
+                                           <span class="badge badge-success">{{ i.status }}</span>
+                                       {% elseif i.status == "Annulée" %}
+                                           <span class="badge badge-danger">{{ i.status }}</span>
+                                       {% elseif i.status == "En cours de preparation" %}
+                                           <span class="badge badge-warning">{{ i.status }}</span>
+                                       {% elseif i.status == "Livraison en cours" %}
+                                           <span class="badge badge-warning">{{ i.status }}</span>
+                                       {% elseif i.status == "livrée" %}
+                                           <span class="badge badge-success">{{ i.status }}</span>
+                                       {% endif %}</td>
+                                   {% for a in  i.getCommandeProduits().toArray() %}
+                                       {% set produits = "Nom = "~a.getProduit().nom~" => { QTE = "~a.quantiteProduit~" , Prix = "~a.getProduit().prix~"DT"~" , Prix total = "~a.getProduit().prix*a.quantiteProduit~"DT"~" }" %}
+                                       {% set listP = listP~produits %}
+                                   {% endfor %}
                                    {% set arrayP = " , Produits : [ "~listP~" ] " %}
                                    {% set qrData="reference du commande = "~i.reference~" , Montant Total = "~i.montant~"DT"~arrayP %}
+
                                    <td class="invert"><img style="width: 100px" class="rounded mx-auto d-block" src="{{ qr_code_data_uri(qrData) }}" /></td>
                                </tr>
+
+
+                               <div class="modal fade" id="myModal9{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="myModal9{{ i.id }}" aria-hidden="true">
+                                   <div class="modal-dialog" role="document">
+                                       <div class="modal-content">
+                                           <div class="modal-header">
+                                               <div class="text-center">
+                                                   <br><br>
+                                                   <h1>List des produits</h1>
+                                               </div>
+
+                                           </div>
+                                           <div class="modal-body">
+                                               <br><br>
+                                              <div class="row ">
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Produit</h4> </strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>QTE</h4></strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Prix</h4></strong></div>
+                                                  <div class="col-md-3 bg-warning"><strong><h4>Totale</h4></strong></div>
+                                               </div>
+                                               <br>
+                                               {% for a in  i.getCommandeProduits().toArray() %}
+                                               <div class="row">
+                                                   <div class="col-md-3 gray"><h5>{{ a.getProduit().nom}}</h5></div>
+                                                   <div class="col-md-3 gray">{{ a.quantiteProduit }}</div>
+                                                   <div class="col-md-3 gray">{{ a.getProduit().prix }}DT</div>
+                                                   <div class="col-md-3 gray">{{a.getProduit().prix * a.getProduit().quantite}}.00 DT</div>
+                                               </div>
+                                                   <br>
+                                               {% endfor %}
+                                                   <hr></hr>
+                                               <div class="row">
+                                                   <div class="col-md-9"><strong>Frait de livraison</strong></div>
+                                                   <div class="col-md-3 text-success"><strong>7.00DT</strong></div>
+                                                   <br><br>
+                                                   <div class="col-md-9"> </div>
+                                                   <div class="col-md-3 text-danger"><h4><strong>Total:</strong></h4><h4><strong>{{ i.montant }}.00DT</strong></h4></div>
+                                               </div>
+                                           </div>
+                                           <div class="modal-footer">
+                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+
+
+
                            {% endfor %}
 
                        </table>
+                       <div style="right: 0">{{ knp_pagination_render(data) }}</div>
+
+
 
 
 

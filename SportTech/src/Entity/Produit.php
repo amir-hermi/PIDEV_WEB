@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\ProduitRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=ProduitRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\ProduitRepository")
  */
 class Produit
 {
@@ -36,8 +38,6 @@ class Produit
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Assert\NotBlank(message="la quantite est obligatoire")
-     * @Assert\Positive(message="quantite invalid")
      * @Groups("produit")
      */
     private $quantite;
@@ -68,16 +68,37 @@ class Produit
     private $commandeProduits;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true , columnDefinition="ENUM('XL','M','XXL','L','S','XS','XXXL')")
      * @Assert\NotBlank(message="la taille est obligatoire")
      * @Groups("produit")
      */
     private $taille;
+    /**
+     * @ORM\ManyToOne(targetEntity=Marque::class, inversedBy="produits" )
+     */
+    private $marque;
+    /**
+     * @ORM\ManyToOne(targetEntity=SousCategorie::class, inversedBy="produits")
+     */
+    private $sousCategire;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $description;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Commandestock::class, mappedBy="produit")
+     * @Groups("commandestock")
+     */
+    private $commandestocks;
 
     public function __construct()
     {
         $this->panier = new ArrayCollection();
         $this->commandeProduits = new ArrayCollection();
+        $this->commandestocks = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -202,4 +223,67 @@ class Produit
 
         return $this;
     }
+    public function getMarque(): ?Marque
+    {
+        return $this->marque;
+    }
+
+    public function setMarque(?Marque $marque): self
+    {
+        $this->marque = $marque;
+
+        return $this;
+    }
+
+    public function getSousCategire(): ?SousCategorie
+    {
+        return $this->sousCategire;
+    }
+
+    public function setSousCategire(?SousCategorie $sousCategire): self
+    {
+        $this->sousCategire = $sousCategire;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+    /**
+     * @return Collection|Commandestock[]
+     */
+    public function getCommandestocks(): Collection
+    {
+        return $this->commandestocks;
+    }
+
+    public function addCommandestock(Commandestock $commandestock): self
+    {
+        if (!$this->commandestocks->contains($commandestock)) {
+            $this->commandestocks[] = $commandestock;
+            $commandestock->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandestock(Commandestock $commandestock): self
+    {
+        if ($this->commandestocks->removeElement($commandestock)) {
+            $commandestock->removeProduit($this);
+        }
+
+        return $this;
+    }
+
+
 }

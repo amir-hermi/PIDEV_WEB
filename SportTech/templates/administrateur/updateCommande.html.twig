@@ -26,7 +26,9 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        {{ form(formU,{'attr':{'novalidate':'novalidate'}}) }}
+                        {{ form_start(formU, {'attr': {'novalidate': 'novalidate'}}) }}
+                            {{ form_widget(formU.status) }}
+                            {{ form_end(formU) }}
                     </table>
                 </div>
             </div>

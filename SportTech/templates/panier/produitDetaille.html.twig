@@ -39,12 +39,12 @@
 
                 <div class="modal-body">
                     <div class="col-md-5 modal_body_left">
-                        <img src="{{ produit.image }}" alt="" class="img-responsive" />
+                        <img src="{{ asset('images/'~asset(produit.image ) ) }}" alt="" class="img-responsive" />
                     </div>
                     <div class="col-md-7 modal_body_right">
                         <h4>{{ produit.nom}}</h4>
                         <p>
-                            jbsk xjsbnxjksb xsjbs xsjbsx xjsbkhsnklqs qbskqjbs qksbqs q
+                            {{produit.description}}
                         </p>
                         <div class="rating">
                             <div class="rating-left">

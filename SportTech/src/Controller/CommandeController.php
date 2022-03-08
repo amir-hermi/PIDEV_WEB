@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Entity\Client;
 use App\Entity\Commande;
 use App\Entity\Produit;
@@ -11,6 +12,7 @@ use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManager;
 use Endroid\QrCode\Builder\BuilderInterface;
 use Endroid\QrCodeBundle\Response\QrCodeResponse;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,8 +30,9 @@ class CommandeController extends AbstractController
     /**
      * @Route ("/commande", name="commande")
      */
-    public function index(BuilderInterface $customQrCodeBuilder,Request $req ,PanierRepository $panierRepository, CommandeRepository $repository): Response
+    public function index( PaginatorInterface $paginator,BuilderInterface $customQrCodeBuilder,Request $request ,PanierRepository $panierRepository, CommandeRepository $repository): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
         $total=0;
         $sum=0;
         $data=[];
@@ -42,6 +45,11 @@ class CommandeController extends AbstractController
         if($utilisateur)
         {
             $data = $repository->findBy(['utilisateur'=>$utilisateur->getId()]);
+            $commande = $paginator->paginate(
+                $data,
+                $request->query->getInt('page',1),//num page
+                4
+            );
             $d = $panierRepository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
             $sum = $d->getProduits()->count();
             $dataTarray = $d->getProduits()->toArray();
@@ -51,7 +59,7 @@ class CommandeController extends AbstractController
         }
 
         return $this->render('commande/index.html.twig', [
-            'data'=>$data , 'sumP'=>$sum , 'total'=>$total , 'qr'=>$response->getContent()
+            'cat'=>$categorie,'data'=>$commande , 'sumP'=>$sum , 'total'=>$total , 'qr'=>$response->getContent()
         ]);
     }
 

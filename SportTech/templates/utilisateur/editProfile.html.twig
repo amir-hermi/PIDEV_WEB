@@ -47,9 +47,21 @@
                                                 {{ form_row(form.tel, {  'attr':{'placeholder': 'Num telephpone ... '}}) }}
                                                 {{ form_widget(form.tel) }}
                                             </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.password, {  'attr':{'placeholder': 'Num telephpone ... '}}) }}
+                                                {{ form_widget(form.password) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.password, {  'attr':{'placeholder': 'Num telephpone ... '}}) }}
+                                                {{ form_widget(form.password) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.image) }}
+                                                {{ form_widget(form.image) }}
+                                            </div>
 
                                         </div>
-                                        <button class="btn btn-success" href="{{ path('app_forgotten_password') }}">{{ button_label|default('change password') }}</button>
+
 
 
 

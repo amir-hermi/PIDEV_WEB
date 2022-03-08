@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Repository\PanierRepository;
 use App\Repository\ProduitRepository;
 use Stripe\Checkout\Session;
@@ -87,6 +88,7 @@ class PaymentController extends AbstractController
      */
     public function paymentMethod(PanierRepository $repository): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
         $total=0;
         $data=[];
         $sum=0;
@@ -99,7 +101,7 @@ class PaymentController extends AbstractController
             $total += ($p->getPrix() * $p->getQuantite());
         }
         return $this->render('panier/payment.html.twig',[
-            'data' => $data , 'sumP'=>$sum , 'total'=>$total
+            'cat'=>$categorie, 'data' => $data , 'sumP'=>$sum , 'total'=>$total
         ]);
     }
 }

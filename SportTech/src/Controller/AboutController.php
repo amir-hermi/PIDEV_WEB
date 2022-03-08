@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Repository\PanierRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,8 @@ class AboutController extends AbstractController
      */
     public function index(PanierRepository $panierRepository): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+
         $total=0;
         $sum=0;
         $utilisateur = $this->getUser();
@@ -27,7 +30,7 @@ class AboutController extends AbstractController
             }
         }
         return $this->render('about/index.html.twig', [
-            'sumP' => $sum,'total'=>$total
+            'sumP' => $sum,'total'=>$total , 'cat'=>$categorie
         ]);
     }
 }

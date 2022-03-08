@@ -2,14 +2,28 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
+use App\Entity\Commande;
+use App\Entity\Mission;
 use App\Entity\Panier;
+use App\Entity\Reclamation;
 use App\Entity\Utilisateur;
 use App\Form\ClientType;
+use App\Form\MissionType;
+use App\Form\LivreurType;
 use App\Form\UtilisateurType;
-use App\Repository\ClientRepository;
+use App\Repository\CategorieRepository;
 use App\Repository\CommandeRepository;
+use App\Repository\MissionRepository;
+use App\Repository\ProduitRepository;
+use App\Repository\ReclamationRepository;
 use App\Repository\UtilisateurRepository;
 use App\Security\LogInFormAthenticator;
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Gedmo\Sluggable\Util\Urlizer;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +34,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class AdministrateurController extends AbstractController
 {
@@ -37,16 +52,23 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/commande", name="listcommande")
      */
-    public function listCommande(CommandeRepository $repository): Response
+    public function listCommande(Request $request, PaginatorInterface $paginator, CommandeRepository $repository): Response
     {
-        $utilisateur = $this->getUser();
 
         $data = $repository->findAll();
-
+        if($request->isMethod('post')){
+            $datawithrecherche = $request->get("recherche");
+            $data = $repository->rechercheParRef($datawithrecherche);
+        }
+        $commandes = $paginator->paginate(
+            $data,
+            $request->query->getInt('page', 1),//num page
+            4
+        );
 
 
         return $this->render('administrateur/commande.html.twig', [
-            'data' => $data,
+            'data' => $commandes,
         ]);
     }
     /******************************************************************************************************
@@ -95,16 +117,16 @@ class AdministrateurController extends AbstractController
 
     */
 
-   /**
-    * @Route("/new", name="utilisateur_new", methods={"GET","POST"})
-    */
-    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, Session $session ,GuardAuthenticatorHandler $guardHandler, LogInFormAthenticator $authenticator,\Swift_Mailer $mailer): Response
+    /**
+     * @Route("/new", name="utilisateur_new", methods={"GET","POST"})
+     */
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, Session $session, GuardAuthenticatorHandler $guardHandler, LogInFormAthenticator $authenticator, \Swift_Mailer $mailer): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
 
         //test de sécurité, un utilisateur connecté ne peut pas s'inscrire
         $utilisateur = $this->getUser();
-        if($utilisateur)
-        {
+        if ($utilisateur) {
             $session->set("message", "Vous ne pouvez pas créer un compte lorsque vous êtes connecté");
             return $this->redirectToRoute('membre');
         }
@@ -115,6 +137,15 @@ class AdministrateurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form['image']->getData();
+            $destination = $this->getParameter('kernel.project_dir').'/public/images';
+            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $newFilename = Urlizer::urlize($originalFilename).'-'.uniqid().'.'.$uploadedFile->guessExtension();
+            $uploadedFile->move(
+                $destination,
+                $newFilename
+            );
+            $utilisateur->setImage($newFilename);
             $entityManager = $this->getDoctrine()->getManager();
             $utilisateur->setPassword($passwordEncoder->encodePassword($utilisateur, $utilisateur->getPassword()));
             $role = ['ROLE_USER'];
@@ -130,33 +161,34 @@ class AdministrateurController extends AbstractController
             $entityManager->persist($panier);
             $utilisateur->setPanier($panier);
             $entityManager->flush();
-            $message = (new \Swift_Message('Nouveau compte'))
+            $message = (new \Swift_Message('Activation Nouveau compte'))
                 // On attribue l'expéditeur
 
-                ->setFrom('testutilisateurs1@gmail.com')
+                ->setFrom('sporttech007@gmail.com')
                 // On attribue le destinataire
 
                 ->setTo($utilisateur->getEmail())
                 // On crée le texte avec la vue
 
                 ->setBody($this->renderView(
-                        'email/activation.html.twig', ['token' => $utilisateur->getActivationToken()]
+                    'email/activation.html.twig', ['token' => $utilisateur->getActivationToken()]
                 ),
                     'text/html'
 
                 );
-           // $mailer->send($message);
-            //return $this->redirectToRoute('utilisateur_index');
             $mailer->send($message);
+            $this->addFlash('messageg', 'vous êtes bloqué , Un E-mail dactivation du mot de passe envoyé!');
+            return $this->redirectToRoute('utilisateur_index');
+            //$mailer->send($message);
 
 
-
-           return $this->redirectToRoute('app_login');
+            //return $this->redirectToRoute('app_login');
         }
 
         return $this->render('utilisateur/new.html.twig', [
             'utilisateur' => $utilisateur,
             'form' => $form->createView(),
+            'cat' => $categorie
         ]);
 
 
@@ -171,7 +203,7 @@ class AdministrateurController extends AbstractController
         $utilisateur = $utilisateur->findOneBy(['activation_token' => $token]);
 
         // Si aucun utilisateur n'est associé à ce token
-        if(!$utilisateur){
+        if (!$utilisateur) {
             // On renvoie une erreur 404
             throw $this->createNotFoundException('Cet utilisateur n\'existe pas');
         }
@@ -187,19 +219,31 @@ class AdministrateurController extends AbstractController
         $this->addFlash('message', 'Utilisateur activé avec succès');
 
         // On retourne à l'accueil
-        return $this->redirectToRoute('home');
+        return $this->redirectToRoute('app_login');
     }
 
     /**
      * @Route("/administrateur/client", name="listclient")
      */
-    public function listClient(UtilisateurRepository $repository): Response
+    public function listClient( Request $request,UtilisateurRepository $utilisateurRepository,UtilisateurRepository $repository): Response
     {
+
+
         $data = $repository->findAll();
-        $da =[];
-        foreach ($data as $d){
-            if( in_array('ROLE_USER', $d->getRoles())){
-                array_push($da , $d);
+        $da = [];
+        foreach ($data as $d) {
+            if (in_array('ROLE_USER', $d->getRoles())) {
+                array_push($da, $d);
+            }
+        }
+        if($request->isMethod('post')){
+            $da = [];
+            $value = $request->get("recherche");
+            $recherche = $utilisateurRepository->rechercheClient($value);
+            foreach ($recherche as $d) {
+                if (in_array('ROLE_USER', $d->getRoles())) {
+                    array_push($da, $d);
+                }
             }
         }
         return $this->render('administrateur/client.html.twig', [
@@ -213,8 +257,7 @@ class AdministrateurController extends AbstractController
     public function edit(Request $request, Utilisateur $utilisateur, UserPasswordEncoderInterface $passwordEncoder, Session $session, $id): Response
     {
         $utilisateur = $this->getUser();
-        if($utilisateur->getId() != $id )
-        {
+        if ($utilisateur->getId() != $id) {
             // un utilisateur ne peut pas en modifier un autre
             $session->set("message", "Vous ne pouvez pas modifier cet utilisateur");
             return $this->redirectToRoute('membre');
@@ -223,6 +266,7 @@ class AdministrateurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $utilisateur->setPassword($passwordEncoder->encodePassword($utilisateur, $utilisateur->getPassword()));
             $this->getDoctrine()->getManager()->flush();
 
@@ -241,15 +285,13 @@ class AdministrateurController extends AbstractController
     public function delete(Request $request, Utilisateur $utilisateur, Session $session, $id): Response
     {
         $utilisateur = $this->getUser();
-        if($utilisateur->getId() != $id )
-        {
+        if ($utilisateur->getId() != $id) {
             // un utilisateur ne peut pas en supprimer un autre
             $session->set("message", "Vous ne pouvez pas supprimer cet utilisateur");
             return $this->redirectToRoute('membre');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->request->get('_token')))
-        {
+        if ($this->isCsrfTokenValid('delete' . $utilisateur->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($utilisateur);
             $entityManager->flush();
@@ -260,10 +302,10 @@ class AdministrateurController extends AbstractController
 
         return $this->redirectToRoute('home');
     }
-/*
-    /**
-     * @Route("/administrateurl/clientl", name="listclientl")
-     */
+    /*
+        /**
+         * @Route("/administrateurl/clientl", name="listclientl")
+         */
     /*
     public function listClientl(UtilisateurRepository $repository): Response
     {
@@ -285,24 +327,35 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/updateClient{idP}", name="updateprofile")
      */
-    public function update($idP,UtilisateurRepository $repository , Request $request): Response
+    public function update($idP, UtilisateurRepository $repository, Request $request): Response
     {
         $client = $repository->find($idP);
 
         $data = $repository->findAll();
-        $da =[];
-        foreach ($data as $d){
-            if( in_array('ROLE_USER', $d->getRoles())){
-                array_push($da , $d);
+        $da = [];
+        foreach ($data as $d) {
+            if (in_array('ROLE_USER', $d->getRoles())) {
+                array_push($da, $d);
             }
         }
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form['image']->getData();
+            $destination = $this->getParameter('kernel.project_dir').'/public/images';
+
+            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $newFilename = Urlizer::urlize($originalFilename).'-'.uniqid().'.'.$uploadedFile->guessExtension();
+
+            $uploadedFile->move(
+                $destination,
+                $newFilename
+            );
+            $client->setImage($newFilename);
             $entityManager = $this->getDoctrine()->getManager();
             //$client->setPassword($client->encodePassword($client, $client->getPassword()));
-            $em=$this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->flush();
             return $this->redirectToRoute('home');
         }
@@ -315,15 +368,15 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/updateClient{idP}", name="updateclient")
      */
-    public function updateClient($idP,UtilisateurRepository $repository , Request $request): Response
+    public function updateClient($idP, UtilisateurRepository $repository, Request $request): Response
     {
         $client = $repository->find($idP);
 
         $data = $repository->findAll();
-        $da =[];
-        foreach ($data as $d){
-            if( in_array('ROLE_USER', $d->getRoles())){
-                array_push($da , $d);
+        $da = [];
+        foreach ($data as $d) {
+            if (in_array('ROLE_USER', $d->getRoles())) {
+                array_push($da, $d);
             }
         }
         $form = $this->createForm(ClientType::class, $client);
@@ -332,7 +385,7 @@ class AdministrateurController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $client->setPassword($client->encodePassword($client, $client->getPassword()));
-            $em=$this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->flush();
             return $this->redirectToRoute('listclient');
         }
@@ -345,10 +398,10 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/deletClient{idP}", name="deletClient")
      */
-    public function suppR($idP,UtilisateurRepository $repository): Response
+    public function suppc($idP, UtilisateurRepository $repository): Response
     {
         $client = $repository->find($idP);
-        $en =$this->getDoctrine()->getManager();
+        $en = $this->getDoctrine()->getManager();
         $en->remove($client);
         $en->flush();
         return $this->redirectToRoute('listclient');
@@ -358,9 +411,9 @@ class AdministrateurController extends AbstractController
     /**
      * @Route ("/clientbloque/{id}", name="clientbloque")
      */
-    public function bloque(UtilisateurRepository $repository , $id): Response
+    public function bloque(UtilisateurRepository $repository, $id): Response
     {
-        $client =$repository->find($id) ;
+        $client = $repository->find($id);
         $manager = $this->getDoctrine()->getManager();
         $client->setEtat('Bloquer');
 
@@ -369,12 +422,13 @@ class AdministrateurController extends AbstractController
         //return new Response('suppression avec succes');
         return $this->redirectToRoute('listclient');
     }
+
     /**
      * @Route ("/clientdebloque/{id}", name="clientdebbloque")
      */
-    public function debloque(UtilisateurRepository $repository , $id): Response
+    public function debloque(UtilisateurRepository $repository, $id): Response
     {
-        $client =$repository->find($id) ;
+        $client = $repository->find($id);
         $manager = $this->getDoctrine()->getManager();
         $client->setEtat('Debloquer');
 
@@ -393,10 +447,10 @@ class AdministrateurController extends AbstractController
     public function listLivreur(UtilisateurRepository $repository): Response
     {
         $data = $repository->findAll();
-        $da =[];
-        foreach ($data as $d){
-            if( in_array('ROLE_LIVREUR', $d->getRoles())){
-                array_push($da , $d);
+        $da = [];
+        foreach ($data as $d) {
+            if (in_array('ROLE_LIVREUR', $d->getRoles())) {
+                array_push($da, $d);
             }
         }
         return $this->render('administrateur/livreur.html.twig', [
@@ -407,10 +461,10 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/deletlivreur{idP}", name="deletlivreur")
      */
-    public function suppLivreur($idP,UtilisateurRepository $repository): Response
+    public function suppLivreur($idP, UtilisateurRepository $repository): Response
     {
         $client = $repository->find($idP);
-        $en =$this->getDoctrine()->getManager();
+        $en = $this->getDoctrine()->getManager();
         $en->remove($client);
         $en->flush();
         return $this->redirectToRoute('listLivreur');
@@ -425,10 +479,19 @@ class AdministrateurController extends AbstractController
 
         $utilisateur = new Utilisateur();
         $panier = new Panier();
-        $form = $this->createForm(UtilisateurType::class, $utilisateur);
+        $form = $this->createForm(LivreurType::class, $utilisateur);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form['image']->getData();
+            $destination = $this->getParameter('kernel.project_dir').'/public/images';
+            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $newFilename = Urlizer::urlize($originalFilename).'-'.uniqid().'.'.$uploadedFile->guessExtension();
+            $uploadedFile->move(
+                $destination,
+                $newFilename
+            );
+            $utilisateur->setImage($newFilename);
             $entityManager = $this->getDoctrine()->getManager();
             $utilisateur->setPassword($passwordEncoder->encodePassword($utilisateur, $utilisateur->getPassword()));
             $role = ['ROLE_LIVREUR'];
@@ -453,7 +516,7 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/updatelivreur{idP}", name="updatelivreur")
      */
-    public function updatelivreur($idP,UtilisateurRepository $repository , UserPasswordEncoderInterface $passwordEncoder, Request $request): Response
+    public function updatelivreur($idP, UtilisateurRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request): Response
     {
         $fournisseur = $repository->find($idP);
         $data = $repository->findAll();
@@ -461,9 +524,9 @@ class AdministrateurController extends AbstractController
         $form = $this->createForm(ClientType::class, $fournisseur);
         $form->handleRequest($request);;
 
-        if($form->isSubmitted()){
+        if ($form->isSubmitted()) {
             $fournisseur->setPassword($passwordEncoder->encodePassword($fournisseur, $fournisseur->getPassword()));
-            $em=$this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->flush();
             return $this->redirectToRoute('listLivreur');
         }
@@ -472,6 +535,147 @@ class AdministrateurController extends AbstractController
 
         ]);
     }
+
+    /**
+     * @Route("/administrateur/mission", name="listmission")
+     */
+    public function listMission(MissionRepository $repository): Response
+    {
+        $data = $repository->findAll();
+        return $this->render('administrateur/mission.html.twig', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @Route("/administrateur/reclamation/pdfR/{id}", name="pdfR")
+     */
+    public function pdfR(ReclamationRepository $repository, $id): Response
+    {
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+        $data = $repository->find($id);
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('administrateur/pdfR.html.twig', [
+            'data' => $data,
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (force download)
+        $dompdf->stream("mypdf.pdf", [
+            "Attachment" => false
+        ]);
+        exit(0);
+    }
+
+    /**
+     * @Route("/administrateur/mission/pdfM/{id}", name="pdfM")
+     */
+    public function pdfM(MissionRepository $repository, $id): Response
+    {
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+        $data = $repository->find($id);
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('administrateur/pdfM.html.twig', [
+            'data' => $data,
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (force download)
+        $dompdf->stream("mypdf.pdf", [
+            "Attachment" => false
+        ]);
+        exit(0);
+    }
+
+
+    /**
+     * @Route("/administrateur/reclamation", name="listreclamation")
+     */
+    public function listReclamation(ReclamationRepository $repository): Response
+    {
+        $data = $repository->findAll();
+        return $this->render('administrateur/reclamation.html.twig', [
+            'data' => $data,
+        ]);
+
+    }
+
+    /**
+     * @Route("/suppM/{id}", name="suppM")
+     */
+    public function suppM($id): Response
+    {
+        $mission = $this->getDoctrine()->getRepository(Mission::class)->find($id);
+        $en = $this->getDoctrine()->getManager();
+        $en->remove($mission);
+        $en->flush();
+        $this->addFlash('success', 'cette mission a bien été supprimé');
+        return $this->redirectToRoute('listmission');
+
+    }
+
+    /**
+     * @Route("/modifM/{id}", name="modifM")
+     */
+    public function modifM(Request $request, $id): Response
+    {
+
+        $mission = $this->getDoctrine()->getRepository(Mission::class)->find($id);
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            $this->addFlash('success', 'cette mission a bien été modifié');
+            return $this->redirectToRoute('mission');
+
+        }
+        return $this->render('mission/index.html.twig', [
+            'f' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/suppR/{id}", name="suppR")
+     */
+    public function suppR($id): Response
+    {
+        $reclamation = $this->getDoctrine()->getRepository(Reclamation::class)->find($id);
+        $en = $this->getDoctrine()->getManager();
+        $en->remove($reclamation);
+        $en->flush();
+        $this->addFlash('success', 'cette reclamation a bien été supprimé');
+        return $this->redirectToRoute('listreclamation');
+    }
+
 
 
 
@@ -485,10 +689,10 @@ class AdministrateurController extends AbstractController
     public function listFournisseur(UtilisateurRepository $repository): Response
     {
         $data = $repository->findAll();
-        $da =[];
-        foreach ($data as $d){
-            if( in_array('ROLE_FOURNISSEUR', $d->getRoles())){
-                array_push($da , $d);
+        $da = [];
+        foreach ($data as $d) {
+            if (in_array('ROLE_FOURNISSEUR', $d->getRoles())) {
+                array_push($da, $d);
             }
         }
         return $this->render('administrateur/fournisseur.html.twig', [
@@ -532,7 +736,7 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/updatefournisseur{idP}", name="updatefournisseur")
      */
-    public function updatefournisseur($idP,UtilisateurRepository $repository , UserPasswordEncoderInterface $passwordEncoder, Request $request): Response
+    public function updatefournisseur($idP, UtilisateurRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request): Response
     {
         $fournisseur = $repository->find($idP);
         $data = $repository->findAll();
@@ -540,9 +744,9 @@ class AdministrateurController extends AbstractController
         $form = $this->createForm(ClientType::class, $fournisseur);
         $form->handleRequest($request);;
 
-        if($form->isSubmitted()){
+        if ($form->isSubmitted()) {
             $fournisseur->setPassword($passwordEncoder->encodePassword($fournisseur, $fournisseur->getPassword()));
-            $em=$this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->flush();
             return $this->redirectToRoute('listFournisseur');
         }
@@ -554,9 +758,6 @@ class AdministrateurController extends AbstractController
     /****************************************************************************************************************
      *Clien
      ********************************************************************************************************************/
-
-
-
 
 
     /****************************************************************************************************************
@@ -578,29 +779,292 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/administrateur/updateCommande{idP}", name="updateCommande")
      */
-    public function updateCommande($idP,CommandeRepository $repository , Request $request): Response
+    public function updateCommande($idP, CommandeRepository $repository, Request $request): Response
     {
         $comm = $repository->find($idP);
-        $form = $this->createFormBuilder($comm)
-            ->add('status',ChoiceType::class,[
-                'choices'  => [
-                    'En Attente' => 'En attente',
-                    'Annulée' => 'Annulée',
-                    'Confirmé' => 'Confirmée',
-                    'En cours de preparation' => 'En cours de preparation',
-                    'Livraison en cours' => 'Livraison en cours',
-                    'Livrée' => 'Livrée',
-                ]])
-            ->add('Confirmer',SubmitType::class)
-            ->getForm();
-        $form->handleRequest($request);
-        if($form->isSubmitted()){
-            $em=$this->getDoctrine()->getManager();
-            $em->flush();
-            return $this->redirectToRoute('listcommande');
-        }
-        return $this->render('administrateur/updateCommande.html.twig', [
-            'formU' => $form->createView(),
-        ]);
+        $newvalue = $request->query->get("value");
+        $n = str_replace("_"," ",$newvalue);
+        $comm->setStatus($n);
+        /* $form = $this->createFormBuilder($comm)
+             ->add('status',ChoiceType::class,[
+                 'placeholder' => null,
+                 'attr'=>array('style'=>'width:15px  ; border-radius: 50px;',  'customattr'=>'customdata'),
+                 'choices'  => [
+                     'En Attente' => 'En attente',
+                     'Annulée' => 'Annulée',
+                     'Confirmé' => 'Confirmée',
+                     'En cours de preparation' => 'En cours de preparation',
+                     'Livraison en cours' => 'Livraison en cours',
+                     'Livrée' => 'Livrée',
+                 ]])
+             ->add('Confirmer',SubmitType::class)
+             ->getForm();
+         $form->handleRequest($request);*/
+
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+        $this->addFlash('updateStatus', 'Commande modifier avec succès');
+        return $this->redirectToRoute('listcommande');
     }
+
+    /**
+     * @Route("/administrateur/filtreCommande", name="filtreCommande")
+     */
+    public function filtreCommande(PaginatorInterface $paginator, CommandeRepository $repository, Request $request): Response
+    {
+        $newvalue = $request->query->get("value");
+        $c = str_replace("_"," ",$newvalue);
+        $comm = $this->getDoctrine()->getRepository(Commande::class)->filtreCommande($c);
+
+        if($request->isMethod('post')){
+            $datawithrecherche = $request->get("recherche");
+            $data = $repository->rechercheParRef($datawithrecherche);
+        }
+
+        $commandes = $paginator->paginate(
+            $comm,
+            $request->query->getInt('page', 1),//num page
+            4
+        );
+
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+        return $this->render('administrateur/commande.html.twig', [
+            'data' => $commandes,
+        ]);    }
+
+
+
+    /************** Statistique Commande ****************/
+
+    /**
+     * @Route("/dashboard" , name="dashboard")
+     */
+    public function dashboard( ProduitRepository $produitRepository,CommandeRepository $repository ,UtilisateurRepository $repository1)
+    {
+
+        $reclamationTrité =$this->getDoctrine()->getRepository(Reclamation::class)->ReclamationTritée();
+        $reclamationNonTrité =$this->getDoctrine()->getRepository(Reclamation::class)->ReclamationNonTritée();
+        $FetenChart1 = new PieChart();
+        $FetenChart1->getData()->setArrayToDataTable(
+            [['Task', 'Hours per Day'],
+                ['Reclamation Tritée',((int) $reclamationTrité)],
+                ['Reclamation non Tritée',((int) $reclamationNonTrité)],
+            ]
+        );
+        $FetenChart1->getOptions()->setTitle("L'ETAT DES RECLAMATION");
+        $FetenChart1->getOptions()->setHeight(400);
+        $FetenChart1->getOptions()->setIs3D(2);
+        $FetenChart1->getOptions()->setWidth(550);
+        $FetenChart1->getOptions()->getTitleTextStyle()->setBold(true);
+        $FetenChart1->getOptions()->getTitleTextStyle()->setColor('#009900');
+        $FetenChart1->getOptions()->getTitleTextStyle()->setItalic(true);
+        $FetenChart1->getOptions()->getTitleTextStyle()->setFontName('Arial');
+        $FetenChart1->getOptions()->getTitleTextStyle()->setFontSize(15);
+        //************************** Hassen ********************
+       /* foreach ( $produitRepository->findAll() as $p){
+            $nikeCount = $produitRepository->countNike($p->getMarque()->getId());
+            dd($nikeCount[0]["libelle"]);
+        }*/
+        $adidasCount = $produitRepository->countAdidas();
+        $pumaCount = $produitRepository->countPuma();
+        $pieChart = new PieChart();
+        $pieChart->getData()->setArrayToDataTable(
+            [['Marques', 'Product per Mark'],
+                ['Nike',    (int) 0],
+
+
+            ]
+        );
+        $pieChart->getOptions()->setTitle('Your Products List');
+        $pieChart->getOptions()->setHeight(400);
+        $pieChart->getOptions()->setWidth(550);
+        $pieChart->getOptions()->getTitleTextStyle()->setBold(true);
+        $pieChart->getOptions()->getTitleTextStyle()->setColor('#009900');
+        $pieChart->getOptions()->getTitleTextStyle()->setItalic(true);
+        $pieChart->getOptions()->getTitleTextStyle()->setFontName('Arial');
+        $pieChart->getOptions()->getTitleTextStyle()->setFontSize(20);
+
+//**************************** Amir ***************************
+        $newCommandeCount =$repository->findNewCommande();
+        $commandeTrite = $repository->findCommandesTritée();
+        $commandeNonTrite = $repository->findCommandesNonTritée();
+        $AmirChart1 = new PieChart();
+        $AmirChart1->getData()->setArrayToDataTable(
+            [['Task', 'Hours per Day'],
+                ['Commande Tritée',((int) $commandeTrite)],
+                ['Commande non Tritée',((int) $commandeNonTrite)],
+            ]
+        );
+        $AmirChart1->getOptions()->setTitle("L'ETAT DES COMMANDES D'AUJOURD'HUIT");
+        $AmirChart1->getOptions()->setHeight(400);
+        $AmirChart1->getOptions()->setIs3D(2);
+        $AmirChart1->getOptions()->setWidth(550);
+        $AmirChart1->getOptions()->getTitleTextStyle()->setBold(true);
+        $AmirChart1->getOptions()->getTitleTextStyle()->setColor('#009900');
+        $AmirChart1->getOptions()->getTitleTextStyle()->setItalic(true);
+        $AmirChart1->getOptions()->getTitleTextStyle()->setFontName('Arial');
+        $AmirChart1->getOptions()->getTitleTextStyle()->setFontSize(15);
+//******************************************** bilell ************
+        $newCommandeCount =$repository->findNewCommande();
+        $data = $repository1->findAll();
+        $Bloqueutilisateur = $repository1->Bloqueutilisateur();
+        $Connecteutilisateur = $repository1->Connecteutilisateur();
+        $numberOfclient = $repository1->numberOfclient();
+
+        $totaleutilisateur = $repository1->totaleutilisateur();
+        //count fournisseur
+        $da =[];
+        $count = 0 ;
+        foreach ($data as $d){
+            if( in_array('ROLE_LIVREUR', $d->getRoles())){
+                array_push($da , $d);
+                $count++ ;
+
+            }
+
+        }
+        //count fournisseur
+        $da =[];
+        $countF = 0 ;
+        foreach ($data as $d){
+            if( in_array('ROLE_FOURNISSEUR', $d->getRoles())){
+                array_push($da , $d);
+                $countF++ ;
+
+            }
+
+        }
+
+        //count user
+        $da =[];
+        $countU = 0 ;
+        foreach ($data as $d){
+            if( in_array('ROLE_USER', $d->getRoles())){
+                array_push($da , $d);
+                $countU++ ;
+
+            }
+
+        }
+        $bilelChart = new PieChart();
+        $bilelChart->getData()->setArrayToDataTable(
+            [['Task', 'Hours per Day'],
+
+                ['Livreur',  (int) $count ],
+                ['Client',  (int) $countU ],
+                ['Fournisseur',  (int) $countF ],
+
+            ]
+        );
+        $bilelChart->getOptions()->setTitle('My Daily Activities');
+        $bilelChart->getOptions()->setHeight(400);
+        $bilelChart->getOptions()->setWidth(600);
+        $bilelChart->getOptions()->getTitleTextStyle()->setBold(true);
+        $bilelChart->getOptions()->getTitleTextStyle()->setColor('#009900');
+        $bilelChart->getOptions()->getTitleTextStyle()->setItalic(true);
+        $bilelChart->getOptions()->getTitleTextStyle()->setFontName('Arial');
+        $bilelChart->getOptions()->getTitleTextStyle()->setFontSize(20);
+//dd($RoleLivreur);
+        return $this->render('administrateur/dashboard.html.twig', array('bilelChart'=>$bilelChart ,'FetenChart1'=>$FetenChart1,'piechart' => $pieChart,'AmirChart1' => $AmirChart1 , 'newCommandeCount'=>$newCommandeCount, 'Bloqueutilisateur' => $Bloqueutilisateur, 'connecteutilisateur' => $Connecteutilisateur , 'numberOfclient'=>$numberOfclient
+        ,'totaleutilisateur'=>$totaleutilisateur,'RoleLivreur'=>$count ,'countLivreur'=>$count ,'countFournisseur'=>$countF,'countUtilisateurs'=>$countU));
+    }
+
+    /**
+     * @Route("/administrateur/categorie", name="listcategorie")
+     */
+
+
+    public function afficheCat (CategorieRepository $repository){
+        //$repo=$this->getDoctrine()->getRepository(Produit::class);
+        $categorie=$repository->findAll();
+        return $this->render('administrateur/categorie.html.twig',
+            ['categorie'=>$categorie]);
+
+    }
+
+    /**
+     * @Route ("/searchRec", name="reclamation_search")
+     */
+    public function searchReclamation(Request $request)
+    {
+        $data=$request->get('reclamation');
+        $em=$this->getDoctrine()->getManager();
+        if($data == ""){
+            $data=$em->getRepository(Reclamation::class)->findAll();
+        }else{
+            $data=$em->getRepository(Reclamation::class)->findBy(
+                ['status'=> $data]
+            );
+        }
+        return $this->render('administrateur/reclamation.html.twig', array(
+            'data' => $data
+        ));
+
+    }
+    /**
+     * @Route ("/searchMis", name="mission_search")
+     */
+    public function searchMission(Request $request)
+    {
+        $data=$request->get('mission');
+        $em=$this->getDoctrine()->getManager();
+        if($data == ""){
+            $data=$em->getRepository(Mission::class)->findAll();
+        }else{
+            $data=$em->getRepository(Mission::class)->findBy(
+                ['adresse'=> $data]
+            );
+        }
+        return $this->render('administrateur/mission.html.twig', array(
+            'data' => $data
+        ));
+
+    }
+    /**
+     * @Route ("/searchMisL", name="mission_searchL")
+     */
+    public function searchMissionL(Request $request)
+    {
+        $data=$request->get('mission');
+        $em=$this->getDoctrine()->getManager();
+        if($data == ""){
+            $data=$em->getRepository(Mission::class)->findAll();
+        }else{
+            $data=$em->getRepository(Mission::class)->findBy(
+                ['adresse'=> $data]
+            );
+        }
+        return $this->render('livreurr/livreur.html.twig', array(
+            'data' => $data
+        ));
+
+    }
+
+    /**
+     * @Route ("/reclamationaccepter/{id}", name="reclamationaccepter")
+     */
+    public function accepter (ReclamationRepository  $repository , $id): Response
+    {
+        $reclamation =$repository->find($id) ;
+        $manager = $this->getDoctrine()->getManager();
+        $reclamation->setStatus('Traité');
+
+        $manager->flush();
+        return $this->redirectToRoute('listreclamation');
+    }
+    /**
+     * @Route ("/reclamationrefuser/{id}", name="reclamationrefuser")
+     */
+    public function refuser (ReclamationRepository $repository , $id): Response
+    {
+        $reclamation =$repository->find($id) ;
+        $manager = $this->getDoctrine()->getManager();
+        $reclamation->setStatus('En cours');
+
+        $manager->flush();
+        //return new Response('suppression avec succes');
+        return $this->redirectToRoute('listreclamation');
+    }
+
 }

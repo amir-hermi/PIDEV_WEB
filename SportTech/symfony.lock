@@ -2,11 +2,17 @@
     "bacon/bacon-qr-code": {
         "version": "2.0.6"
     },
+    "behat/transliterator": {
+        "version": "v1.3.0"
+    },
     "captcha-com/captcha": {
         "version": "4.2.5"
     },
     "captcha-com/symfony-captcha-bundle": {
         "version": "4.2.12"
+    },
+    "cmen/google-charts-bundle": {
+        "version": "5.0.0"
     },
     "dasprid/enum": {
         "version": "1.0.3"
@@ -89,6 +95,9 @@
     "doctrine/sql-formatter": {
         "version": "1.1.2"
     },
+    "dompdf/dompdf": {
+        "version": "v1.2.0"
+    },
     "egulias/email-validator": {
         "version": "3.1.2"
     },
@@ -104,11 +113,32 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "friendsofsymfony/ckeditor-bundle": {
+        "version": "2.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "f5ad42002183a6881962683e6d84bbb25cdfce5d"
+        },
+        "files": [
+            "./config/packages/fos_ckeditor.yaml"
+        ]
+    },
+    "gedmo/doctrine-extensions": {
+        "version": "v3.5.0"
+    },
     "gregwar/captcha": {
         "version": "v1.1.9"
     },
     "gregwar/captcha-bundle": {
         "version": "v2.1.5"
+    },
+    "knplabs/knp-components": {
+        "version": "v3.4.0"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v5.8.0"
     },
     "laminas/laminas-code": {
         "version": "4.5.1"
@@ -127,6 +157,12 @@
     },
     "phar-io/version": {
         "version": "3.1.1"
+    },
+    "phenx/php-font-lib": {
+        "version": "0.5.4"
+    },
+    "phenx/php-svg-lib": {
+        "version": "0.4.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
@@ -180,6 +216,9 @@
     },
     "psr/log": {
         "version": "1.1.4"
+    },
+    "sabberworm/php-css-parser": {
+        "version": "8.4.0"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
@@ -239,6 +278,18 @@
         },
         "files": [
             "./config/packages/sensio_framework_extra.yaml"
+        ]
+    },
+    "stof/doctrine-extensions-bundle": {
+        "version": "1.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.2",
+            "ref": "e805aba9eff5372e2d149a9ff56566769e22819d"
+        },
+        "files": [
+            "./config/packages/stof_doctrine_extensions.yaml"
         ]
     },
     "stripe/stripe-php": {

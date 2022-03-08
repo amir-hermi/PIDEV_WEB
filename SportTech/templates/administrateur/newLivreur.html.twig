@@ -5,7 +5,7 @@
 {% block ShowLogin %} {% endblock %}
 {% block banner %}
     {% block header %} {% endblock %}
-{% block footer %} {% endblock %}
+    {% block footer %} {% endblock %}
 
 {% endblock %}
 
@@ -16,7 +16,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;</button>
                 <h4 class="modal-title" id="myModalLabel">
-                    Registerer Un livreur!</h4>
+                    Register A delivery man!!</h4>
             </div>
             <div class="modal-body modal-body-sub">
                 <div class="row">
@@ -55,8 +55,15 @@
                                                 {{ form_row(form.confirm_password, {  'attr':{'placeholder': 'Répéter votre mot de passe'}}) }}
                                                 {{ form_widget(form.confirm_password) }}
                                             </div>
+
+                                            <br>
+                                            <div class="col-12">
+                                                {{ form_row(form.image) }}
+                                                {{ form_widget(form.image) }}
+                                            </div>
+
                                         </div>
-                                        <button class="btn btn-success">{{ button_label|default('') }}</button>
+
 
 
 
@@ -81,11 +88,16 @@
                         <div id="OR" class="hidden-xs">
                             OR</div>
                     </div>
+                    <div>
+
+
+                    </div>
                     <div class="col-md-4 modal_body_right modal_body_right1">
                         <div class="row text-center sign-with">
                             <div class="col-md-12">
-                                <h3 class="other-nw">
-                                    Espace Administrateur pour ajoute un Livreur</h3>
+                                <h4 class="other-nw">
+                                    <img alt="image" src="{{ asset('images/ZayaniHassen.png') }}" width="250" height="300"/>
+                                    Administrator area to add a delivery person</h4>
                             </div>
                             <div class="col-md-12">
 

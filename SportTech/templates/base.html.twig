@@ -157,19 +157,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                         </span>
                         <span class="text">Bonjour {{ app.user.username }}</span>
                     </a>
-
-
                 </div>
             {% else %}
-            <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('activer')|length > 0 ? '' : 'mb-5' }}">
                 <div>
                     <a class="btn btn-sm btn-primary" href="{{ path('utilisateur_new') }}">S'inscrire</a>
                     <a class="btn btn-sm btn-success" href="{{ path('app_login') }}">Se connecter</a>
-
-
                 </div>
             {% endif %}
-
             <div class="w3l_logo">
                 <h1><a href="{{ path('home') }}">SportTech<span>For sport Lovers </span></a></h1>
             </div>
@@ -224,45 +218,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" {% block actProduct%} {% endblock %}>Produits <b class="caret"></b></a>
                             <ul class="dropdown-menu multi-column columns-3">
                                 <div class="row">
-                                    <div class="col-sm-3">
-                                        <ul class="multi-column-dropdown">
-                                            <h6>Hommes</h6>
-                                            <li><a href="{{ path('products') }}">Dresses<span>New</span></a></li>
-                                            <li><a href="{{ asset('sweaters.html') }}">Sweaters</a></li>
-                                            <li><a href="{{ asset('skirts.html') }}">Shorts & Skirts</a></li>
-                                            <li><a href="{{ asset('jeans.html') }}">Jeans</a></li>
-                                            <li><a href="{{ asset('shirts.html') }}">Shirts & Tops<span>New</span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <ul class="multi-column-dropdown">
-                                            <h6>Femmes</h6>
-                                            <li><a href="{{ asset('salwars.html') }}">Salwars</a></li>
-                                            <li><a href="{{ asset('sarees.html') }}">Sarees<span>New</span></a></li>
-                                            <li><a href="{{ asset('products.html') }}"><i>Summer Store</i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <ul class="multi-column-dropdown">
-                                            <h6>Materiel sport</h6>
-                                            <li><a href="{{ asset('sandals.html') }}">Flats</a></li>
-                                            <li><a href="{{ asset('sandals.html') }}">Sandals</a></li>
-                                            <li><a href="{{ asset('sandals.html') }}">Boots</a></li>
-                                            <li><a href="{{ asset('sandals.html') }}">Heels</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <ul class="multi-column-dropdown">
-                                            <h6>Materiel musculation</h6>
-                                            <li><a href="{{ path('products') }}">Dresses<span>New</span></a></li>
-                                            <li><a href="sweaters.html">Sweaters</a></li>
-                                            <li><a href="skirts.html">Shorts & Skirts</a></li>
-                                            <li><a href="jeans.html">Jeans</a></li>
-                                            <li><a href="shirts.html">Shirts & Tops<span>New</span></a></li>
-                                        </ul>
-
-                                        <div class="clearfix"></div>
-                                    </div>
+                                    {% for c in cat %}
+                                        <div class="col-sm-3">
+                                            <ul class="multi-column-dropdown">
+                                                <h6>{{ c.libelle }}</h6>
+                                                {% for souscat in c.getSousCategories.toArray() %}
+                                                    <li><a href="{{ path('filteproducts',{'categorie':souscat.categorie.libelle , 'souscategorie':souscat.libelle}) }}">{{ souscat.libelle }}<span>New</span></a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </ul>
                         </li>
@@ -274,16 +239,25 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                 <li class="nav-item dropdown no-arrow">
                                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <style>
+                                            .image-ronde{
+                                                width : 60px; height : 60px;
+                                                border: none;
+                                                -moz-border-radius : 75px;
+                                                -webkit-border-radius : 75px;
+                                                border-radius : 75px;
+                                            }
+                                        </style>
+                                        <img src="{{ asset('images/'~asset(app.user.image ) ) }}" class="image-ronde">
 
-                                        <img class="img-profile rounded-circle"
-                                             src="{{ asset('adminStyle/img/undraw_profile.svg') }}"/>
+
                                         <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ app.user.username }}</span>
 
                                     </a>
                                     <!-- Dropdown - User Information -->
                                     <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                          aria-labelledby="userDropdown">
-                                        <a style="padding-bottom: 20px" class="dropdown-item" href="{{ path('updateprofile',{'idP' :app.user.id}) }}"">
+                                        <a style="padding-bottom: 20px" class="dropdown-item" href="{{ path('updateprofile',{'idP' :app.user.id}) }}">
                                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                             Profile
                                         </a><br>
@@ -300,7 +274,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                             Reclamation
                                         </a><br>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{{ path('app_logout') }}" data-toggle="modal" >
+                                        <a class="dropdown-item" href="{{ path('app_logout2') }}" data-toggle="modal" >
                                             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger-400"></i>
                                             Logout
                                         </a>
@@ -1428,21 +1402,57 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     </div>
     <!-- //top-brands -->
     <!-- newsletter -->
+    {% if app.user %}
     <div class="newsletter">
         <div class="container">
             <div class="col-md-6 w3agile_newsletter_left">
-                <h3>Newsletter</h3>
-                <p>Excepteur sint occaecat cupidatat non proident, sunt.</p>
+                <h3>Commentaire</h3>
+                <p>si tu veux évaluer notre application.</p>
             </div>
             <div class="col-md-6 w3agile_newsletter_right">
-                <form action="#" method="post">
-                    <input type="email" name="Email" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" required="">
-                    <input type="submit" value="" />
-                </form>
+
+
+
+
+
+                <div class="my-custom-class-for-errors">
+                    {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
+                </div>
+
+                <div class="row">
+                    {{ form_label(f.texte,"Votre Commentaire :") }}
+                    {{ form_widget(f.texte)}}
+                </div>
+                {{ form_end(f) }}
             </div>
+
             <div class="clearfix"> </div>
+            <table class="table table-warning table-striped" id="dataTable" width="100%" cellspacing="0">
+                <div class="panel-heading">
+
+                    <tbody>
+                    {% for i in data %}
+                        <tr align="center">
+                            <td>  {{ i.utilisateur.username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{ i.texte }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{ i.createdAt |date('d/m/Y H:i') }}</td>
+
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </div>
+            </table>
+
+            <div align="right">
+                {{ knp_pagination_render(data) }}
+            </div>
         </div>
     </div>
+
+
+    {% endif %}
     <!-- //newsletter -->
 {% endblock %}
 {% block footer %}

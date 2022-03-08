@@ -2,24 +2,24 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Entity\Client;
 use App\Entity\Commande;
 use App\Entity\CommandeProduit;
 use App\Entity\Panier;
 use App\Entity\Produit;
 use App\Repository\CommandeProduitRepository;
+use App\Repository\ProduitRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManager;
 use Endroid\QrCode\Builder\BuilderInterface;
 use Endroid\QrCodeBundle\Response\QrCodeResponse;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\String\ByteString;
-use App\Repository\ClientRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\PanierRepository;
-use App\Repository\ProduitRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -30,17 +30,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Date;
-use function Sodium\randombytes_buf;
-use function Sodium\randombytes_random16;
-use function Sodium\randombytes_uniform;
 
 class PanierController extends AbstractController
 {
     /**
      * @Route("/panier", name="panier")
      */
-    public function index(PanierRepository $repository , Request $request): Response
+    public function index(PanierRepository $repository , Request $request , PaginatorInterface $paginator): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+
         $total=0;
         $data=[];
         $sum=0;
@@ -49,6 +48,11 @@ class PanierController extends AbstractController
         $d = $repository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
         $sum = $d->getProduits()->count();
         $data = $d->getProduits()->toArray();
+        $produits = $paginator->paginate(
+            $data,
+            $request->query->getInt('page',1),//num page
+            4
+        );
         foreach ($data as $p){
             $total += ($p->getPrix() * $p->getQuantite());
         }
@@ -87,7 +91,7 @@ class PanierController extends AbstractController
      } */
 
         return $this->render('panier/index.html.twig', [
-            'data' => $data , 'sumP'=>$sum , 'total'=>$total
+            'cat'=>$categorie ,'data' => $produits , 'sumP'=>$sum , 'total'=>$total
         ]);
     }
 
@@ -189,9 +193,9 @@ class PanierController extends AbstractController
 
 
     /**
-     * @Route("/ajoutProduit{id}", name="ajoutProduit")
+     * @Route("/ajoutProduit{id}", name="ajoutProduit1")
      */
-    public function ajoutProduit( $id,PanierRepository $repository , Request $request): Response
+    public function ajoutProduit( ProduitRepository $produitRepository,$id,PanierRepository $repository , Request $request): Response
     {
         $utilisateur = $this->getUser();
         if($utilisateur==null){
@@ -203,7 +207,7 @@ class PanierController extends AbstractController
         }
         $d = $repository->findBy(['utilisateur'=>$utilisateur->getId()])[0];
         $em = $this->getDoctrine()->getManager();
-        $produit = $this->getDoctrine()->getRepository(Produit::class)->find($id);
+        $produit = $produitRepository->find($id);
         $d->addProduit($produit);
         $em->flush();
         $this->addFlash(

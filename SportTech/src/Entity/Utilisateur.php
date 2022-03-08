@@ -109,11 +109,39 @@ class Utilisateur implements UserInterface
      */
     private $reset_token;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Mission::class, mappedBy="utilisateur")
+     */
+    private $missions;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reclamation::class, mappedBy="utilisateur")
+     */
+    private $reclamations;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Commantaire::class, mappedBy="utilisateur")
+     */
+    private $commantaires;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $activetoken;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $image;
+
 
 
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
+        $this->missions = new ArrayCollection();
+        $this->reclamations = new ArrayCollection();
+        $this->commantaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -316,6 +344,121 @@ class Utilisateur implements UserInterface
 
     public function IsVerified(bool $true)
     {
+    }
+
+    /**
+     * @return Collection<int, Mission>
+     */
+    public function getMissions(): Collection
+    {
+        return $this->missions;
+    }
+
+    public function addMission(Mission $mission): self
+    {
+        if (!$this->missions->contains($mission)) {
+            $this->missions[] = $mission;
+            $mission->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMission(Mission $mission): self
+    {
+        if ($this->missions->removeElement($mission)) {
+            // set the owning side to null (unless already changed)
+            if ($mission->getUtilisateur() === $this) {
+                $mission->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reclamation>
+     */
+    public function getReclamations(): Collection
+    {
+        return $this->reclamations;
+    }
+
+    public function addReclamation(Reclamation $reclamation): self
+    {
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations[] = $reclamation;
+            $reclamation->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReclamation(Reclamation $reclamation): self
+    {
+        if ($this->reclamations->removeElement($reclamation)) {
+            // set the owning side to null (unless already changed)
+            if ($reclamation->getUtilisateur() === $this) {
+                $reclamation->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commantaire>
+     */
+    public function getCommantaires(): Collection
+    {
+        return $this->commantaires;
+    }
+
+    public function addCommantaire(Commantaire $commantaire): self
+    {
+        if (!$this->commantaires->contains($commantaire)) {
+            $this->commantaires[] = $commantaire;
+            $commantaire->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommantaire(Commantaire $commantaire): self
+    {
+        if ($this->commantaires->removeElement($commantaire)) {
+            // set the owning side to null (unless already changed)
+            if ($commantaire->getUtilisateur() === $this) {
+                $commantaire->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+    public function getActivetoken(): ?string
+    {
+        return $this->activetoken;
+    }
+
+    public function setActivetoken(?string $activetoken): self
+    {
+        $this->activetoken = $activetoken;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
     }
 
 

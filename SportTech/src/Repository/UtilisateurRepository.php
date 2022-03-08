@@ -46,29 +46,75 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
     // /**
     //  * @return Utilisateur[] Returns an array of Utilisateur objects
     //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Utilisateur
+    public function Bloqueutilisateur()
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+            ->select('count(u.etat)')
+            ->andWhere('u.etat = :val')
+            ->setParameter('val', 'Bloquer')
+            ->getQuery()->getSingleScalarResult()
+
+            ;
+    }
+
+    public function totaleutilisateur()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.username)')
+            ->andWhere('u.username != :val')
+            ->setParameter('val', '')
+            ->getQuery()->getSingleScalarResult()
+
+            ;
+    }
+
+
+    public function Connecteutilisateur()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.activetoken)')
+            ->andWhere('u.activetoken != :val')
+            ->setParameter('val', '')
+            ->getQuery()->getSingleScalarResult();
+
+    }
+
+    public function RoleUtilisateur()
+    { $role = ['ROLE_USER'];
+        return $this->createQueryBuilder('u')
+            ->select('count(u.roles)')
+            ->andWhere('u.roles = :val')
+            ->setParameter('val', $role  )
+            ->getQuery()->getSingleScalarResult();
+
+    }
+
+
+
+    public function findOneBySomeField()
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles like :v')
+            ->setParameter('v', '%'.'ROLE_LIVREUR'.'%')
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+
+    public function rechercheClient($value)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.username = :val')
+            ->orWhere('u.email = :val1')
+            ->orWhere('u.etat =:val2')
+            ->orWhere('u.lastname =:val3')
+            ->setParameter('val', $value )
+            ->setParameter('val1', $value )
+            ->setParameter('val2', $value )
+            ->setParameter('val3', $value )
+
+            ->getQuery()->getResult()
+            ;
+    }
 }

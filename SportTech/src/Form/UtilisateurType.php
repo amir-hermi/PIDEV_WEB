@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Utilisateur;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 //ajout du use pour utiliser le type input password de Symfony
@@ -22,6 +23,7 @@ class UtilisateurType extends AbstractType
             // suppression du role qui sera défini par défaut
             ->add('password', PasswordType::class)
             ->add('confirm_password',PasswordType::class)
+            ->add('image',FileType::class)
             ->add('captcha', CaptchaType::class, array(
                 'width' => 200,
                 'height' => 50,

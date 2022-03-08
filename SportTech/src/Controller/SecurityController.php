@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Entity\Utilisateur;
 use App\Form\ResetPassType;
 use App\Repository\UtilisateurRepository;
@@ -22,6 +23,8 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils, Session $session ): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+
         // if ($this->getUser()) {
         //     return $this->redirectToRoute('target_path');
         // }
@@ -32,7 +35,7 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $username = $authenticationUtils->getLastUsername();
 
-        $return = ['username' => $username, 'error' => $error];
+        $return = ['cat' => $categorie,'username' => $username, 'error' => $error];
 
         if($session->has('message') )
         {
@@ -41,12 +44,25 @@ class SecurityController extends AbstractController
             $return['message'] = $message; //on ajoute à l'array de paramètres notre message
         }
 
-        return $this->render('security/login.html.twig', $return);
+        return $this->render('security/login.html.twig',  $return);
     }
 
 
 
+    /**
+     * @Route("/logout2", name="app_logout2")
+     */
+    public function logout2()
+    {
+        $utilisateur = $this->getUser();
 
+        $utilisateur->setActivetoken(null);
+        $em=$this->getDoctrine()->getManager();
+        $em->flush();
+        //$this->addFlash('messagegg','vous etes bloquer ');
+
+        return $this->redirectToRoute('app_logout');
+    }
 
     /**
      * @Route("/logout", name="app_logout")
@@ -57,10 +73,12 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/login/oubli-pass", name="app_forgotten_password")
+     * @Route("/oubli-pass", name="app_forgotten_password")
      */
     public function oubliPass(Request $request, UtilisateurRepository $users, \Swift_Mailer $mailer, TokenGeneratorInterface $tokenGenerator): Response
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+
         // On initialise le formulaire
         $form = $this->createForm(ResetPassType::class);
 
@@ -122,7 +140,7 @@ class SecurityController extends AbstractController
         }
 
         // On envoie le formulaire à la vue
-        return $this->render('security/forgotten_password.html.twig',['emailForm' => $form->createView()]);
+        return $this->render('security/forgotten_password.html.twig',['emailForm' => $form->createView() ,'cat'=>$categorie]);
     }
 
     /**
@@ -130,6 +148,8 @@ class SecurityController extends AbstractController
      */
     public function resetPassword(Request $request, string $token, UserPasswordEncoderInterface $passwordEncoder)
     {
+        $categorie = $this->getDoctrine()->getRepository(Categorie::class)->findAll();
+
         // On cherche un utilisateur avec le token donné
         $user = $this->getDoctrine()->getRepository(Utilisateur::class)->findOneBy(['reset_token' => $token]);
 
@@ -160,7 +180,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }else {
             // Si on n'a pas reçu les données, on affiche le formulaire
-            return $this->render('security/reset_password.html.twig', ['token' => $token]);
+            return $this->render('security/reset_password.html.twig', ['token' => $token ,'cat'=>$categorie]);
         }
 
     }

@@ -69,6 +69,11 @@ class Commande
      */
     private $utilisateur;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Mission::class, inversedBy="commandes")
+     */
+    private $mission;
+
     public function __construct()
     {
 
@@ -185,6 +190,18 @@ class Commande
     public function setUtilisateur(?utilisateur $utilisateur): self
     {
         $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getMission(): ?Mission
+    {
+        return $this->mission;
+    }
+
+    public function setMission(?Mission $mission): self
+    {
+        $this->mission = $mission;
 
         return $this;
     }

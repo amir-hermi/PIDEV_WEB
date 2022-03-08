@@ -1,3 +1,4 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}New Utilisateur{% endblock %}
@@ -16,7 +17,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;</button>
                 <h4 class="modal-title" id="myModalLabel">
-                    Modifier Un Livreur!</h4>
+                    Modify a Delivery!</h4>
             </div>
             <div class="modal-body modal-body-sub">
                 <div class="row">
@@ -47,9 +48,17 @@
                                                 {{ form_row(form.tel, {  'attr':{'placeholder': 'Num telephpone ... '}}) }}
                                                 {{ form_widget(form.tel) }}
                                             </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.password, {  'attr':{'placeholder': 'Password ... '}}) }}
+                                                {{ form_widget(form.password) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.image) }}
+                                                {{ form_widget(form.image) }}
+                                            </div>
 
                                         </div>
-                                        <button class="btn btn-success">{{ button_label|default('') }}</button>
+
 
 
 
@@ -74,11 +83,16 @@
                         <div id="OR" class="hidden-xs">
                             OR</div>
                     </div>
+                    <div>
+
+
+                    </div>
                     <div class="col-md-4 modal_body_right modal_body_right1">
                         <div class="row text-center sign-with">
                             <div class="col-md-12">
-                                <h3 class="other-nw">
-                                    Espace Administrateur pour Modifier un Livreur</h3>
+                                <h4 class="other-nw">
+                                    <img alt="image" src="{{ asset('images/ZayaniHassen.png') }}" width="250" height="300"/>
+                                    Administrator area to Modify a Delivery Person</h4>
                             </div>
                             <div class="col-md-12">
 
@@ -91,6 +105,11 @@
     </div>
 
 {% endblock %}
+
+
+
+
+
 
 
 

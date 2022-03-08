@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 
 /**
  * @Route("/utilisateur")
@@ -21,7 +23,7 @@ class UtilisateurController extends AbstractController
     /**
      * @Route("/bil", name="utilisateur_index", methods={"GET"})
      */
-    public function index(UtilisateurRepository $utilisateurRepository, Session $session): Response
+    public function index(UtilisateurRepository $utilisateurRepository, Session $session,TokenGeneratorInterface $token , \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $tokenStorage): Response
     {
         //besoin de droits admin
         $utilisateur = $this->getUser();
@@ -31,26 +33,23 @@ class UtilisateurController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         else if(in_array('ROLE_USER', $utilisateur->getRoles())){
-           if($utilisateur->getEtat()=="Bloquer"){
-               $this->addFlash('info', "formulaire non disponible");
-               $session->set("message", "Merci de vous connecter");
-             return  $this->redirectToRoute('app_logout');
-           }
+            if($utilisateur->getEtat()=="Bloquer"){
+                $tokenStorage->setToken();
+                $this->addFlash('messagegg','you are blocked Sorry ');
+                //$session->set("message", "Merci de vous connecter");
+                return  $this->redirectToRoute('app_login');
+            }
 
 
         }
         else if(in_array('ROLE_ADMIN', $utilisateur->getRoles())){
 
-            return $this->render('administrateur/dashboard.html.twig', [
-                'utilisateurs' => $utilisateurRepository->findAll(),
-            ]);
+            return $this->redirectToRoute('dashboard');
 
         }
         else if(in_array('ROLE_LIVREUR', $utilisateur->getRoles())){
 
-            return $this->render('livreurr/livreur.html.twig', [
-                'utilisateurs' => $utilisateurRepository->findAll(),
-            ]);
+            return $this->redirectToRoute('livreurB');
 
         }
 
@@ -61,6 +60,12 @@ class UtilisateurController extends AbstractController
             ]);
 
         }
+        $utilisateur = $this->getUser();
+
+        $token = $token->generateToken();
+        $utilisateur->setActivetoken($token);
+        $em=$this->getDoctrine()->getManager();
+        $em->flush();
 
         return $this->redirectToRoute('home');
     }

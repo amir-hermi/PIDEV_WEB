@@ -1,0 +1,137 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Reclamation{% endblock %}
+{% block activeRec %} active {% endblock %}
+{% block css %}
+    <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ asset('adminStyle/css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-2 text-gray-800" align="center">Liste des Réclamations</h1>
+        <hr class="sidebar-divider my-0">
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
+                {% endfor %}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <a href="{{ path('categorie') }}" class="btn btn-primary btn-icon-split">
+                                        <span class="icon text-gray-600">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+                            <span class="text">Nouvelle Catégorie Réclamation</span>
+
+                        </a>
+
+
+
+                        <form method="post" action="{{ path('reclamation_search') }}"
+                              class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input name="reclamation" type="text" class="form-control bg-light border-0 small" placeholder="Search for status"
+                                       aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit" value="chercher">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <p></p>
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr align="center">
+                                <th>Réference</th>
+                                <th>Date Reclamation</th>
+                                <th>Nom Client</th>
+                                <th>Type Reclamation</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <th>Supprimer</th>
+                                <th>Télecharger</th>
+
+                            </tr>
+                            </thead>
+                            <tfoot>
+
+                            </tfoot>
+                            <tbody>
+                            {% for i in data %}
+                                <tr align="center">
+                                    <td>{{ i.id }}</td>
+                                    <td>{{ i.createdAt |date('d/m/Y H:i') }}</td>
+                                    <td>{{ i.utilisateur.username }}</td>
+                                    <td>{{ i.categorieReclamation.type }}</td>
+                                    <td>{% if i.status == "Traité" %}
+                                            <span class="badge badge-success">{{ i.status }}</span>
+                                   {% elseif i.status == "En cours"%}
+                                       <span class="badge badge-warning">{{ i.status }}</span>
+                                   {% endif %}
+                                       </td>
+
+                                    <td><a href="{{ path('reclamationaccepter',{'id':i.id}) }}">
+                                            <span class="badge badge-success">Traité</span></a>
+                                        <a href="{{ path('reclamationrefuser',{'id':i.id}) }}">
+                                            <span class="badge badge-warning">En cours</span>
+                                        </a></td>
+                                    <td>
+                                        <a href="{{ path('suppR',{'id' :i.id}) }}" class="btn btn-danger btn-circle">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('pdfR',{'id' :i.id}) }}">
+                                            telécharger
+                                        </a>
+                                    </td>
+
+
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script src="{{ asset('adminStyle/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('adminStyle/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ asset('adminStyle/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ asset('adminStyle/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{{ asset('adminStyle/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+
+    <!-- Page level custom scripts -->
+    <script src="{{ asset('adminStyle/js/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('adminStyle/js/demo/chart-pie-demo.js') }}"></script>
+
+{% endblock %}

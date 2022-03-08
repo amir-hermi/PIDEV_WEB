@@ -1,0 +1,29 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block content %}
+
+    {{ form_start(formliststock,{'attr':{'novalidate':'novalidate'}}) }}
+
+    {{ form_label(formliststock.quantite) }}
+    {{ form_widget(formliststock.quantite)}}
+    {{ form_errors(formliststock.quantite) }}
+
+    {# {{ form_label(formliststock.date) }}
+    {{ form_widget(formliststock.date)}}
+    {{ form_errors(formliststock.date) }}
+
+    {{ form_label(formliststock.fournisseur) }}
+    {{ form_widget(formliststock.fournisseur)}}
+    {{ form_errors(formliststock.fournisseur) }}
+
+    {{ form_label(formliststock.produit) }}
+    {{ form_widget(formliststock.produit)}}
+    {{ form_errors(formliststock.produit) }}#}
+
+
+    {{ form_end(formliststock) }}
+
+   {#  {{ form_start(formliststock,{'attr':{'novalidate':'novalidate'}}) }}
+    {{ form(formliststock) }}
+    {{ form_widget(formliststock)}}
+    {{ form_end(formliststock) }}#}
+{% endblock %}

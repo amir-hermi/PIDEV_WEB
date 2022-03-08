@@ -17,7 +17,18 @@
 {% block content %}
 
     <div class="container-fluid">
-
+        <form method="post"
+              class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" name="recherche" class="form-control bg-light border-0 small" placeholder="Search for..."
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Liste des clients</h1>
 
@@ -36,7 +47,11 @@
                             <th>email</th>
                             <th>Telephone</th>
                             <th>Type</th>
+
                             <th>Etat</th>
+                            <th>Image</th>
+                            <th>Status</th>
+
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -60,26 +75,39 @@
 
                                     <br>{% endfor %}</td>
                             <td>{{ i.etat }}</td>
+                            <td><img  style="width: 70px; height: 50px" class="img-profile rounded-circle"
+                                      src="{{ asset('images/'~asset(i.image ) ) }}"/></td>
+                            <td>
+                                {% if i.getActivetoken() == null %}
+                                    <span class="badge bg-secondary" style="color:black">Offline</span>
+                                {% elseif i.getActivetoken() != null %}
+                                    <span class="badge rounded-pill bg-success" style="color:black" >En Ligne</span>
+                                {% endif %}
 
-                            <td><a href="{{ path('updateclient',{'idP' :i.id}) }}" class="btn btn-warning btn-circle">
-                                    <i class="fas fa-pen"></i>
+                                <br></td>
+
+                            <td>
+                                <a href="{{ path('clientbloque',{'id' :i.id}) }}" class="btn btn-danger btn-icon-split">
+                                        <span class="icon text-white-50"  STYLE="font-size:70%">
+                                            <i class="fas fa-trash"></i>
+                                        </span>
+                                    <span class="text" STYLE="font-size:70%" >_bloquer_  </span><br>
+                                </a><br>
+                                <a href="{{ path('clientdebbloque',{'id' :i.id}) }}" class="btn btn-success btn-icon-split">
+                                        <span class="icon text-white-50" STYLE="font-size:70%">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    <span class="text" STYLE="font-size:70%" >Debloquer</span>
+                                </a>
+                               <!-- <a href="{{ path('updateclient',{'idP' :i.id}) }}" class="btn btn-warning btn-circle">
+                                    <i class="fas fa-pen" ></i>
                                 </a>
                                 <a href="{{ path('deletClient',{'idP' :i.id}) }}" class="btn btn-warning btn-circle ">
                                     <i class="fas fa-exclamation-triangle"></i>
                                 </a>
+                                -->
+<br>
 
-                                <a href="{{ path('clientbloque',{'id' :i.id}) }}" class="btn btn-danger btn-icon-split">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-trash"></i>
-                                        </span>
-                                    <span class="text">bloquer</span>
-                                </a>
-                                <a href="{{ path('clientdebbloque',{'id' :i.id}) }}" class="btn btn-success btn-icon-split">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-check"></i>
-                                        </span>
-                                    <span class="text">Debloquer</span>
-                                </a>
                             </td>
                         </tr>
                           {% endfor %}
@@ -103,8 +131,6 @@
     <script src="{{ asset('adminStyle/js/sb-admin-2.min.js') }}"></script>
 
     <!-- Page level plugins -->
-    <script src="{{ asset('adminStyle/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('adminStyle/js/demo/datatables-demo.js') }}"></script>
