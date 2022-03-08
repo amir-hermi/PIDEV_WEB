@@ -1,0 +1,93 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block activeM%} active {% endblock %}
+{% block title %}Hello AdministrateurController!{% endblock %}
+{% block css %}
+    <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ asset('adminStyle/css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-2 text-gray-800">Liste des marques </h1>
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <a href="{{ path('addmarque') }}" class="btn btn-success ">
+Ajouter marque                    </a>
+                    <br>
+                    <br>
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+
+
+                            <td>libelle</td>
+                            <td>Action</td>
+
+                        </tr>
+                        </thead>
+
+                        <tfoot>
+
+                        <td>libelle</td>
+                        <td>Action</td>
+
+                        </tfoot>
+                        <tbody>
+                        {% for m in marques %}
+                            <tr>
+
+                                <td>{{ m.libelle}}</td>
+                                <td>
+                                    <a href="{{ path('deletemarque',{'id' :m.id}) }}" class="btn btn-danger btn-circle">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+
+
+                                    <a href="{{ path('updatemarque',{'id' :m.id}) }}" class="btn btn-success btn-circle">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </td>
+
+
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    <div>
+                        {{ knp_pagination_render(marques) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script src="{{ asset('adminStyle/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('adminStyle/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ asset('adminStyle/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ asset('adminStyle/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Page level plugins -->
+
+    <!-- Page level custom scripts -->
+{% endblock %}
