@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProductsController!{% endblock %}
+{% block title %}Produits{% endblock %}
 {% block actProduct%} class="act" {% endblock %}
+{% block ShowLogin %}
+{% endblock %}
 {% block banner %}
     <!-- banner -->
     <div class="banner8" id="home1">
@@ -134,7 +136,7 @@
 
 
 
-{% block listProd %}
+                    {% block listProd %}
                     <div class="w3ls_dresses_grid_right_grid2">
                         <div class="w3ls_dresses_grid_right_grid2_left">
                             <h3>Showing Results: 0-1</h3>
@@ -154,45 +156,45 @@
                     <div class="w3ls_dresses_grid_right_grid3">
 
                         {% for i in data %}
-                        <div class="col-md-4 agileinfo_new_products_grid agileinfo_new_products_grid_dresses">
-                            <div class="agile_ecommerce_tab_left dresses_grid">
-                                <div class="hs-wrapper hs-wrapper2">
-                                    <img src="images/ado-banner.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p1.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p3.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p1.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p3.jpg" alt=" " class="img-responsive" />
-                                    <img src="images/p2.jpg" alt=" " class="img-responsive" />
-                                    <div class="w3_hs_bottom w3_hs_bottom_sub1">
-                                        <ul>
-                                            <li>
-                                                <a href="#" data-toggle="modal" data-target="#myModal9"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
-                                            </li>
-                                        </ul>
+                            <div class="col-md-4 agileinfo_new_products_grid agileinfo_new_products_grid_dresses">
+                                <div class="agile_ecommerce_tab_left dresses_grid">
+                                    <div class="hs-wrapper hs-wrapper2">
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <img src="{{ i.image }}" alt=" " class="img-responsive" />
+                                        <div class="w3_hs_bottom w3_hs_bottom_sub1">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" data-toggle="modal" data-target="#myModal9"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h5>{{ i.nom }}</h5>
+                                    <div class="simpleCart_shelfItem">
+                                        <p> <i class="item_price">{{ i.prix }} DT</i></p>
+                                        <p><a href="{{ path('ajoutProduit',{id:i.id}) }}" class="item_add" >Add to cart</a></p>
                                     </div>
                                 </div>
-                                <h5><a href="single.html">Ideal Luminous Mousse</a></h5>
-                                <div class="simpleCart_shelfItem">
-                                    <p><span>{{ i.prix }}</span> <i class="item_price">$200</i></p>
-                                    <p><a href="{{ path('panier') }}" class="item_add" href="#">Add to cart</a></p>
-                                </div>
                             </div>
-                        </div>
                         {% endfor %}
                         <div class="clearfix"> </div>
                     </div>
 
-                        <div class="clearfix"> </div>
-                    </div>
+                    <div class="clearfix"> </div>
+                </div>
 
                 {% endblock %}
 
-                </div>
-                <div class="clearfix"> </div>
             </div>
+            <div class="clearfix"> </div>
         </div>
+    </div>
     </div>
     <div class="modal video-modal fade" id="myModal9" tabindex="-1" role="dialog" aria-labelledby="myModal9">
         <div class="modal-dialog" role="document">

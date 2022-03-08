@@ -30,52 +30,78 @@
             </div>
             <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
                 {% endfor %}
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr align="center">
-                            <th>Réference</th>
-                            <th>Date Reclamation</th>
-                            <th>Type Reclamation</th>
-                            <th>Supprimer</th>
-                            <th>Télecharger</th>
-                            <th>Archiver</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <a href="{{ path('categorie') }}" class="btn btn-primary btn-icon-split">
+                                        <span class="icon text-gray-600">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+                            <span class="text">Nouvelle Catégorie Réclamation</span>
 
-                        </tfoot>
-                        <tbody>
-                        {% for i in data %}
+                        </a>
+
+
+
+                        <form method="post" action="{{ path('reclamation_search') }}"
+                                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input name="reclamation" type="text" class="form-control bg-light border-0 small" placeholder="Search for status"
+                                       aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit" value="chercher">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <p></p>
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
                             <tr align="center">
-                                <td>{{ i.id }}</td>
-                                <td>{{ i.date |date('d-m-Y') }}</td>
-                                <td>{{ i.categorieReclamation.type }}</td>
+                                <th>Réference</th>
+                                <th>Date Reclamation</th>
+                                <th>Nom Client</th>
+                                <th>Type Reclamation</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <th>Supprimer</th>
+                                <th>Télecharger</th>
 
-
-                                <td>
-                                    <a href="{{ path('suppR',{'id' :i.id}) }}" class="btn btn-danger btn-circle">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="{{ asset('downloads/recClient.pdf') }}" download="mission.pdf">
-                                        telécharger
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="{{ path('suppM',{'id' :i.id}) }}" class="btn btn-warning btn-circle">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </a>
-                                </td>
                             </tr>
-                        {% endfor %}
+                            </thead>
+                            <tfoot>
 
-                        </tbody>
-                    </table>
+                            </tfoot>
+                            <tbody>
+                            {% for i in data %}
+                                <tr align="center">
+                                    <td>{{ i.id }}</td>
+                                    <td>{{ i.date |date('d-m-Y') }}</td>
+                                    <td>{{ i.utilisateur.username }}</td>
+                                    <td>{{ i.categorieReclamation.type }}</td>
+                                    <td>{{ i.status }}</td>
+
+                                    <td><a href="{{ path('reclamationaccepter',{'id':i.id}) }}">traité</a>
+                                        <a href="{{ path('reclamationrefuser',{'id':i.id}) }}">en cours</a></td>
+                                    <td>
+                                        <a href="{{ path('suppR',{'id' :i.id}) }}" class="btn btn-danger btn-circle">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('pdfR',{'id' :i.id}) }}">
+                                            telécharger
+                                        </a>
+                                    </td>
+
+
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
         </div>
 
     </div>

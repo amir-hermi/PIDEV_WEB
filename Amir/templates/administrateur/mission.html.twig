@@ -30,65 +30,77 @@
             </div>
             <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
                 {% endfor %}
-            <div class="card-body">
-                <div class="table-responsive">
-                    <a href="{{ path('mission') }}" class="btn btn-light btn-icon-split">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <a href="{{ path('mission') }}" class="btn btn-primary btn-icon-split">
                                         <span class="icon text-gray-600">
                                             <i class="fas fa-arrow-right"></i>
                                         </span>
-                        <span class="text">Nouvelle Mission</span>
+                            <span class="text">Nouvelle Mission</span>
 
-                    </a>
+                        </a>
+                        <form method="post" action="{{ path('mission_search') }}"
+                              class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input name="mission" type="text" class="form-control bg-light border-0 small" placeholder="Search for adresse"
+                                       aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit" value="chercher">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <p></p>
 
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr align="center">
-                            <th>Réference</th>
-                            <th>Date Mission</th>
-                            <th>Adresse Mission</th>
-                            <th>Nom de livreur</th>
-                            <th>Modifier</th>
-                            <th>Supprimer</th>
-                            <th>Télecharger</th>
-                            <th>Archiver</th>
-                        </tr>
-                        </thead>
 
-                        <tbody>
-                        {% for i in data %}
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
                             <tr align="center">
-                                <td>{{ i.id }}</td>
-                                <td>{{ i.date |date('d-m-Y') }}</td>
-                                <td>{{ i.adresse }}</td>
-                                <td>{{ i.livreur.nom }}</td>
+                                <th>Réference</th>
+                                <th>Date Mission</th>
+                                <th>Adresse Mission</th>
+                                <th>Nom de livreur</th>
+                                <th>Status</th>
+                                <th>Modifier</th>
+                                <th>Supprimer</th>
+                                <th>Télecharger</th>
 
-                                <td>
-                                    <a href="{{ path('modifM',{'id' :i.id}) }}" class="btn btn-info btn-circle">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-                                </td>
-                                <td>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for i in data %}
+                                <tr align="center">
+                                    <td>{{ i.id }}</td>
+                                    <td>{{ i.date |date('d-m-Y') }}</td>
+                                    <td>{{ i.adresse }}</td>
+                                    <td>{{ i.utilisateur.username }}</td>
+                                    <td>{{ i.status }}</td>
+
+                                    <td>
+                                        <a href="{{ path('modifM',{'id' :i.id}) }}" class="btn btn-info btn-circle">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                    </td>
+                                    <td>
                                         <a href="{{ path('suppM',{'id' :i.id}) }}" class="btn btn-danger btn-circle">
                                             <i class="fas fa-trash"></i>
                                         </a>
-                                </td>
-                                <td>
-                                    <a href="{{ asset('downloads/mission.pdf') }}" download="mission.pdf">
-                                      telécharger
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="{{ path('suppM',{'id' :i.id}) }}" class="btn btn-warning btn-circle">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('pdfM',{'id' :i.id}) }}" >
+                                            telécharger
+                                        </a>
+                                    </td>
 
-                        </tbody>
-                    </table>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
         </div>
 
     </div>

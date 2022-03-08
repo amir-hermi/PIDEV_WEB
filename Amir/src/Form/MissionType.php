@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Livreur;
 use App\Entity\Mission;
+use App\Entity\Utilisateur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -17,7 +18,7 @@ class MissionType extends AbstractType
         $builder
             ->add('adresse')
             ->add('date')
-            ->add("livreur",EntityType::class, ['class'=>Livreur::class , 'choice_label' => 'nom'])
+            ->add("utilisateur",EntityType::class, ['class'=>Utilisateur::class , 'choice_label' => 'username'])
             ->add('ajouter',SubmitType::class,
                 [
                     'attr' => ['class' => 'btn btn-sm btn-primary hvr-ripple-out mb-3'],

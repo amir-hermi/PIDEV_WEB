@@ -18,6 +18,25 @@ class ReclamationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Reclamation::class);
     }
+    public function ReclamationTritée()
+    {
+        return $this->createQueryBuilder('r')
+            ->select('count(r.status)')
+            ->andWhere('r.status != :val')
+            ->setParameter('val', 'En attente' )
+            ->getQuery()->getSingleScalarResult()
+            ;
+    }
+
+    public function ReclamationNonTritée()
+    {
+        return $this->createQueryBuilder('r')
+            ->select('count(r.status)')
+            ->andWhere('r.status = :val')
+            ->setParameter('val', 'En attente' )
+            ->getQuery()->getSingleScalarResult()
+            ;
+    }
 
     // /**
     //  * @return Reclamation[] Returns an array of Reclamation objects

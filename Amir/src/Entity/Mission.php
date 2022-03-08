@@ -25,22 +25,23 @@ class Mission
 
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Livreur::class, inversedBy="missions")
-     * @Assert\NotBlank(message="livreur n'est pas sélectionée ")
-     */
-    private $livreur;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="missions")
-     */
-    private $admin;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="adresse est vide")
      */
     private $adresse;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="missions")
+     */
+    private $utilisateur;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
 
     public function getId(): ?int
     {
@@ -61,29 +62,8 @@ class Mission
 
 
 
-    public function getLivreur(): ?livreur
-    {
-        return $this->livreur;
-    }
 
-    public function setLivreur(?livreur $livreur): self
-    {
-        $this->livreur = $livreur;
 
-        return $this;
-    }
-
-    public function getAdmin(): ?admin
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?admin $admin): self
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
 
     public function getAdresse(): ?string
     {
@@ -93,6 +73,30 @@ class Mission
     public function setAdresse(?string $adresse): self
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

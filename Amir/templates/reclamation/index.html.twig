@@ -55,25 +55,33 @@
                    </div>
                    <nav class="navbar navbar-expand-lg navbar-dark navbar-bg {{ app.session.flashbag.peek('success')|length > 0 ? '' : 'mb-5' }}">
                        {% endfor %}
-                   <h3><span>Nouvelle Reclamation</span></h3>
+                       {% if app.user %}
+                       <h3><span>Nouvelle Reclamation</span></h3>
+                       <div class="checkout-center">
 
-                   <div class="checkout-center">
-                       {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
-                       {{ form_label(f.date,"Date Reclamation :") }}
-                       {{ form_widget(f.date)}}
-                       {{ form_errors(f.date) }}
-                       {{ form_label(f.categorie_reclamation,"Catégorie Reclamation :") }}
-                       {{ form_widget(f.categorie_reclamation)}}
-                       {{ form_errors(f.categorie_reclamation) }}
-                       {{ form_end(f) }}
-                       <br>
+                           {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
+                           {{ form_label(f.date,"Date Reclamation :") }}
+                           {{ form_widget(f.date)}}
+                           {{ form_errors(f.date) }}
+                           {{ form_label(f.categorie_reclamation,"Catégorie Reclamation :") }}
+                           {{ form_widget(f.categorie_reclamation)}}
+                           {{ form_errors(f.categorie_reclamation) }}
+                           {{ form_end(f) }}
+                           <br>
 
-                       <br>
+                           <br>
 
-                   </div>
+                       </div>
 
+                       <h3><span>
+                       <a href="{{ path('historique') }}">
+                           Historique
+                       </a></span></h3>
+                       {% endif%}
                </div>
            </div>
+
+
            <div class="modal video-modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModal6">
                <div class="modal-dialog" role="document">
                    <div class="modal-content">

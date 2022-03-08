@@ -31,7 +31,6 @@
                             <th>Reference</th>
                             <th>Liste des produits</th>
                             <th>Nom de client</th>
-                            <th>Region</th>
                             <th>Montant</th>
                             <th>Date de creation</th>
                             <th>Status</th>
@@ -43,7 +42,6 @@
                             <th>Reference</th>
                             <th>Liste des produits</th>
                             <th>Nom de client</th>
-                            <th>Region</th>
                             <th>Montant</th>
                             <th>Date de creation</th>
                             <th>Status</th>
@@ -54,13 +52,15 @@
                         {% for i in data %}
                         <tr>
                             <td>{{ i.reference }}</td>
-                            <td>System Architect</td>
-                            <td>{{ i.client.id }}</td>
-                            <td></td>
-                            <td>{{ i.montant }}</td>
-                            <td>$320,800</td>
-                            <td>$320,800</td>
-                            <td><a href="#" class="btn btn-warning btn-circle">
+                            <td>{%for a in i.getCommandeProduits().toArray()    %}
+                                    {{ a.getProduit().nom }}
+                                {% endfor %}</td>
+                            <td>{{ i.utilisateur.username }}</td>
+                            <td>{{ i.montant }}
+                            </td>
+                            <td>{{ i.getDateCreation().format('j-m-y') }}</td>
+                            <td>{{ i.status }}</td>
+                            <td><a href="{{ path('updateCommande',{'idP': i.id }) }}" class="btn btn-warning btn-circle">
                                     <i class="fas fa-pen"></i>
                                 </a></td>
                         </tr>
@@ -68,6 +68,8 @@
 
                         </tbody>
                     </table>
+                    <div style="right: 0">{{ knp_pagination_render(data) }}</div>
+
                 </div>
             </div>
         </div>
@@ -86,9 +88,6 @@
     <script src="{{ asset('adminStyle/js/sb-admin-2.min.js') }}"></script>
 
     <!-- Page level plugins -->
-    <script src="{{ asset('adminStyle/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('adminStyle/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
     <!-- Page level custom scripts -->
-    <script src="{{ asset('adminStyle/js/demo/datatables-demo.js') }}"></script>
 {% endblock %}

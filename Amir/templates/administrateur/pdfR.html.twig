@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {% block css %}
+        <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css" media="all" />
+        <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css" media="all" />
+        <link href="{{ asset('css/fasthover.css') }}" rel="stylesheet" type="text/css" media="all" />
+
+        <link href='//fonts.googleapis.com/css?family=Glegoo:400,700' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+        <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    {% endblock %}
+</head>
+<body>
+<hr>
+
+    <h1 align="center" style="color:blue;">Fiche de Réclamation</h1>
+<p class="text-warning bg-dark"></p>
+<hr>
+<p class="text-warning bg-dark"></p>
+<p class="text-warning bg-dark" align="center"><u>Lettre Recommandée Avec Accusé de Réception</u></p>
+<p class="text-warning bg-dark" align="center"></p>
+<p class="text-warning bg-dark"><b>Objet :</b>{{ data.categorieReclamation.type }}</p>
+<p class="text-warning bg-dark" align="center"></p>
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+
+    <tr align="center">
+        <td style="color:blue;"><b><u>Réference</u></b></td>
+        <td>{{ data.id }}</td>
+    </tr>
+    <tr align="center">
+        <td style="color:blue;"><b><u>Date Reclamation</u></b></td>
+        <td>{{ data.date |date('d-m-Y') }}</td>
+    </tr>
+    <tr align="center">
+        <td style="color:blue;"><b><u>Nom Client</u></b></td>
+        <td>{{ data.utilisateur.username }}</td>
+    </tr>
+    <tr align="center">
+        <td style="color:blue;"><b><u>Numéro de Téléphone Client</u></b></td>
+        <td>{{ data.utilisateur.tel }}</td>
+    </tr>
+
+</table>
+<p class="text-warning bg-dark"></p>
+<p class="text-warning bg-dark"></p>
+<p class="text-warning bg-dark">Cher client, nous avons bien traité votre réclamation et nous avons remercie pour votre confiance de notre application SportTek.</p>
+</body>
+</html>

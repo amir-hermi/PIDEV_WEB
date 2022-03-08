@@ -1,7 +1,7 @@
 {% extends 'baseAdmin.html.twig' %}
 
 {% block title %}Hello AdministrateurController!{% endblock %}
-{% block activeFr %} active {% endblock %}
+{% block activeFR%} active {% endblock %}
 {% block css %}
     <link href="{{ asset('adminStyle/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
@@ -20,7 +20,12 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Liste des Fournisseurs</h1>
-
+        <a href="{{ path('fournisseur_new') }}" class="btn btn-secondary btn-icon-split">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+            <span class="text">Ajouter Fournisseur</span>
+        </a>
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
 
@@ -32,37 +37,40 @@
                             <th>Nom</th>
                             <th>Prenom</th>
                             <th>email</th>
-                            <th>telephone</th>
-                            <th>etat de client</th>
+                            <th>Telephone</th>
+                            <th>Type</th>
                             <th>Action</th>
                         </tr>
                         </thead>
                         <tfoot>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prenom</th>
-                            <th>email</th>
-                            <th>telephone</th>
-                            <th>etat de client</th>
-                            <th>Action</th>
 
-                        </tr>
                         </tfoot>
                         <tbody>
-
+                        {% for i in data %}
                             <tr>
-                                <td>{{ i.nom }}</td>
-                                <td>{{ i.prenom }}</td>
-                                <td>{{ i.email }}</td>>
+                                <td>{{ i.lastname }}</td>
+                                <td>{{ i.username }}</td>
+                                <td>{{ i.email }}</td>
                                 <td>{{ i.tel }}</td>
-                                <td>{{ i.etat }}</td>
-                                <td>
 
+                                <td>{% for a in i.getRoles() %}
+                                        {% if a == "ROLE_FOURNISSEUR" %}
+                                            FOURNISSEUR
+                                        {% elseif a == "ROLE_ADMIN"%}
+                                            ADMINISTRATEUR
+                                        {% endif %}
 
+                                        <br>{% endfor %}</td>
+
+                                <td><a href="{{ path('updatefournisseur',{'idP' :i.id}) }}" class="btn btn-warning btn-circle">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="{{ path('deletClient',{'idP' :i.id}) }}" class="btn btn-warning btn-circle ">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </a>
                                 </td>
                             </tr>
-
-
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>

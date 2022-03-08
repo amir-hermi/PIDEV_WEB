@@ -25,21 +25,23 @@ class Reclamation
      */
     private $date;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Livreur::class, inversedBy="reclamations")
-     */
-    private $livreur;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="reclamations")
-     */
-    private $client;
 
     /**
      * @ORM\ManyToOne(targetEntity=CategorieReclamation::class, inversedBy="reclamations")
      * @Assert\NotBlank(message="catégorie n'est pas sélectionée ")
      */
     private $categorieReclamation;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="reclamations")
+     */
+    private $utilisateur;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
 
     public function getId(): ?int
     {
@@ -70,29 +72,8 @@ class Reclamation
         return $this;
     }
 
-    public function getLivreur(): ?livreur
-    {
-        return $this->livreur;
-    }
 
-    public function setLivreur(?livreur $livreur): self
-    {
-        $this->livreur = $livreur;
 
-        return $this;
-    }
-
-    public function getClient(): ?client
-    {
-        return $this->client;
-    }
-
-    public function setClient(?client $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
 
     public function getCategorieReclamation(): ?categorieReclamation
     {
@@ -102,6 +83,30 @@ class Reclamation
     public function setCategorieReclamation(?categorieReclamation $categorieReclamation): self
     {
         $this->categorieReclamation = $categorieReclamation;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

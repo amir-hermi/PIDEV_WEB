@@ -17,10 +17,12 @@ class MissionController extends AbstractController
     {
 
         $mission =new Mission();
+        $mission->setDate(new \DateTime('now'));
         $form=$this->createForm(MissionType::class,$mission);
         $form->handleRequest($request1);
         if($form->isSubmitted() && $form->isValid())
         {
+            $mission->setStatus('En attente');
             $em= $this->getDoctrine()->getManager();
             $em->persist( $mission);
             $em->flush();

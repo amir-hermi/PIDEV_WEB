@@ -5,7 +5,9 @@ namespace App\Entity;
 use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProduitRepository::class)
@@ -16,38 +18,66 @@ class Produit
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("produit")
      */
     private $id;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups("produit")
      */
     private $prix;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("produit")
      */
     private $image;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\NotBlank(message="la quantite est obligatoire")
+     * @Assert\Positive(message="quantite invalid")
+     * @Groups("produit")
      */
     private $quantite;
 
     /**
      * @ORM\ManyToMany(targetEntity=Panier::class, inversedBy="produits")
+     * @ORM\JoinTable(name="panierproduit")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
      */
     private $panier;
 
+
+
     /**
-     * @ORM\ManyToMany(targetEntity=Commande::class, inversedBy="produits")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("produit")
      */
-    private $commandes;
+    private $nom;
+
+
+
+    /**
+     * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="produit" , cascade={"persist", "remove"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
+     */
+    private $commandeProduits;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="la taille est obligatoire")
+     * @Groups("produit")
+     */
+    private $taille;
 
     public function __construct()
     {
         $this->panier = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
+        $this->commandeProduits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -115,26 +145,60 @@ class Produit
         return $this;
     }
 
-    /**
-     * @return Collection|Commande[]
-     */
-    public function getCommandes(): Collection
+
+
+    public function getNom(): ?string
     {
-        return $this->commandes;
+        return $this->nom;
     }
 
-    public function addCommande(Commande $commande): self
+    public function setNom(?string $nom): self
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes[] = $commande;
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection|CommandeProduit[]
+     */
+    public function getCommandeProduits(): Collection
+    {
+        return $this->commandeProduits;
+    }
+
+    public function addCommandeProduit(CommandeProduit $commandeProduit): self
+    {
+        if (!$this->commandeProduits->contains($commandeProduit)) {
+            $this->commandeProduits[] = $commandeProduit;
+            $commandeProduit->setProduit($this);
         }
 
         return $this;
     }
 
-    public function removeCommande(Commande $commande): self
+    public function removeCommandeProduit(CommandeProduit $commandeProduit): self
     {
-        $this->commandes->removeElement($commande);
+        if ($this->commandeProduits->removeElement($commandeProduit)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeProduit->getProduit() === $this) {
+                $commandeProduit->setProduit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTaille(): ?string
+    {
+        return $this->taille;
+    }
+
+    public function setTaille(?string $taille): self
+    {
+        $this->taille = $taille;
 
         return $this;
     }

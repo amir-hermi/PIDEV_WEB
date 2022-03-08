@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PanierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,6 +17,7 @@ class Panier
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("panier")
      */
     private $id;
 
@@ -23,13 +25,19 @@ class Panier
 
     /**
      * @ORM\ManyToMany(targetEntity=Produit::class, mappedBy="panier")
+     * @ORM\JoinTable(name="panierproduit")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("panier")
      */
     private $produits;
 
     /**
-     * @ORM\OneToOne(targetEntity=Client::class, inversedBy="panier", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Utilisateur::class, inversedBy="panier", cascade={"persist", "remove"})
+     * @Groups("panier")
      */
-    private $client;
+    private $utilisateur;
+
+
 
 
 
@@ -63,6 +71,7 @@ class Panier
         return $this;
     }
 
+
     public function removeProduit(Produit $produit): self
     {
         if ($this->produits->removeElement($produit)) {
@@ -72,15 +81,17 @@ class Panier
         return $this;
     }
 
-    public function getClient(): ?client
+    public function getUtilisateur(): ?utilisateur
     {
-        return $this->client;
+        return $this->utilisateur;
     }
 
-    public function setClient(?client $client): self
+    public function setUtilisateur(?utilisateur $utilisateur): self
     {
-        $this->client = $client;
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
+
+
 }

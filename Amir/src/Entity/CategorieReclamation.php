@@ -6,6 +6,7 @@ use App\Repository\CategorieReclamationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CategorieReclamationRepository::class)
@@ -25,7 +26,8 @@ class CategorieReclamation
     private $reclamations;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true , columnDefinition="ENUM('Retard Commande','Changement Produit','Commande Incorrecte')")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="catégorie réclamation est vide")
      */
     private $type;
 
