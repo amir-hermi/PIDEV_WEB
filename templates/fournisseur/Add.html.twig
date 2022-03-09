@@ -1,0 +1,21 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block content %}
+
+    {{ form_start(formfournisseur,{'attr':{'novalidate':'novalidate'}}) }}
+
+    {{ form_label(formfournisseur.nom_fournisseur) }}
+    {{ form_widget(formfournisseur.nom_fournisseur)}}
+    {{ form_errors(formfournisseur.nom_fournisseur) }}
+
+    {{ form_label(formfournisseur.adresse_fournisseur) }}
+    {{ form_widget(formfournisseur.adresse_fournisseur)}}
+    {{ form_errors(formfournisseur.adresse_fournisseur) }}
+
+    {{ form_label(formfournisseur.MDP_fournisseur) }}
+    {{ form_widget(formfournisseur.MDP_fournisseur)}}
+    {{ form_errors(formfournisseur.MDP_fournisseur) }}
+
+
+    {{ form_end(formfournisseur) }}
+{% endblock %}

@@ -1,0 +1,3 @@
+swiftmailer:
+    url: gmail://sporttech007@gmail.com:Zayani321@localhost
+    spool: { type: 'memory' }

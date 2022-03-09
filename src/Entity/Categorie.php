@@ -29,7 +29,7 @@ class Categorie
 
 
     /**
-     * @ORM\OneToMany(targetEntity=SousCategorie::class, mappedBy="categorie")
+     * @ORM\OneToMany(targetEntity=SousCategorie::class, mappedBy="categorie" , cascade={ "remove"})
      */
     private $sousCategories;
 

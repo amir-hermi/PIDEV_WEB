@@ -1,0 +1,17 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block content %}
+    <h1>Update liststock</h1>
+    {% for message in app.flashes ('info') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div
+    {% endfor %}
+    {# {{ form(f) }} #}
+    {{ form_start(f,{'attr':{'novalidate':'novalidate'}}) }}
+
+    {{ form_label(f.quantite) }}
+    {{ form_widget(f.quantite)}}
+    {{ form_errors(f.quantite) }}
+
+    {{ form_end(f) }}
+{% endblock %}

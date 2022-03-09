@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+{% block actHome%}{% endblock %}
+{% block title %} Panier {% endblock %}
+{% set prod = {} %}
+{% for i in data %}
+
+    {%  set prod = prod|merge([i.id]) %}
+{% endfor %}
+{% set count=0 %}
+{% block banner %}
+
+    <!-- banner -->
+    <div class="banner10" id="home1">
+        <div class="container">
+            <h2>Favorie</h2>
+        </div>
+    </div>
+    <!-- //banner -->
+
+    <!-- breadcrumbs -->
+    <div class="breadcrumb_dress">
+        <div class="container">
+            <ul>
+                <li><a href="{{ path('home') }}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a> <i>/</i></li>
+                <li>Panier</li>
+            </ul>
+        </div>
+    </div>
+    <!-- //breadcrumbs -->
+{% endblock %}
+{% block ShowLogin %}
+{% endblock %}
+
+{% block body %}
+
+    <!-- dresses -->
+    <div class="dresses">
+        <div class="container">
+            <div class="w3ls_dresses_grids">
+
+                <div class="col-md-8 w3ls_dresses_grid_right">
+
+
+
+                    {% block listProd %}
+
+                    <div class="w3ls_dresses_grid_right_grid2">
+                        <div class="w3ls_dresses_grid_right_grid2_left">
+                            {% set count = 0 %}
+                            {% for i in data %}
+                                {% set count = count + 1  %}
+                            {% endfor %}
+                        </div>
+                        <div class="w3ls_dresses_grid_right_grid2_right">
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                    <div class="w3ls_dresses_grid_right_grid3">
+
+                        {% for i in data %}
+                            <div class="col-md-4 agileinfo_new_products_grid agileinfo_new_products_grid_dresses">
+                                <div class="agile_ecommerce_tab_left dresses_grid">
+                                    <div class="hs-wrapper hs-wrapper2">
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                        <div class="w3_hs_bottom w3_hs_bottom_sub1">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" data-toggle="modal" data-target="#myModal{{ i.id }}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h5><a href="#" data-toggle="modal" data-target="#myModal{{ i.id }}">{{ i.nom }}</a></h5>
+                                    <h5><span style="color: #2d4373"> Marque : </span> {{ i.marque.libelle }}</h5>
+                                    <div class="simpleCart_shelfItem">
+                                        <p> <i class="item_price">{{ i.prix }} DT</i></p>
+                                        <p><a href="{{ path('ajoutProduit1',{id:i.id}) }}" class="item_add" >Add to cart</a></p>
+                                    </div>
+                                    <div class="modal_body_right_cart simpleCart_shelfItem">
+                                        <p><a href="{{ path('removePF',{id : i.id}) }}" class="btn btn-circle btn-danger">
+                                            Remove </a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal video-modal fade" id="myModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="myModal{{ i.id }}">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        </div>
+                                        <section>
+                                            <div class="modal-body">
+                                                <div class="col-md-5 modal_body_left">
+                                                    <img src="{{ asset('images/'~asset(i.image ) ) }}" alt=" " class="img-responsive" />
+                                                </div>
+                                                <div class="col-md-7 modal_body_right">
+                                                    <h4>{{ i.nom }}</h4>
+                                                    <p>{{ i.description | raw }}</p>
+
+                                                    <div class="modal_body_right_cart simpleCart_shelfItem">
+                                                        <p> <i class="item_price">{{ i.prix }}DT</i></p>
+                                                        <p><a href="{{ path('removePF',{id:i.id}) }}" class="item_add" >Remove</a></p>
+                                                    </div>
+
+
+                                                </div>
+                                                <div class="clearfix"> </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="clearfix"> </div>
+                    </div>
+
+                    <div class="clearfix"> </div>
+                </div>
+
+                {% endblock %}
+
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+
+
+    <!-- //dresses -->
+
+       {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

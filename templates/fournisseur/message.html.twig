@@ -1,0 +1,30 @@
+<form>
+    <div class="form-row">
+        <div class="col-7">
+            <input name="message" id="m" type="text" class="form-control" placeholder="City">
+        </div>
+        <button type="submit" onclick="save_data();">envoyer</button>
+
+    </div>
+</form>
+
+
+
+<script>
+
+    function save_data(){
+        alert('hello')
+        event.preventDefault();
+
+
+        var form_data = new FormData();
+        const input= document.getElementById("m");
+
+        form_data.append(m.name, m.value);
+
+
+        let http = new XMLHttpRequest();
+        http.open('POST', "http://127.0.0.1:8000/message", true);
+        http.send(form_data);
+    }
+</script>

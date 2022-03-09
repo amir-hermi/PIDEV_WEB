@@ -1,0 +1,28 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block content %}
+<h1>Update fournisseur</h1>
+ {% for message in app.flashes ('info') %}
+  <div class="alert alert-success">
+   {{ message }}
+  </div
+ {% endfor %}
+
+{# {{ form(f) }} #}
+
+ {{ form_start(f,{'attr':{'novalidate':'novalidate'}}) }}
+
+ {{ form_label(f.nom_fournisseur) }}
+ {{ form_widget(f.nom_fournisseur)}}
+ {{ form_errors(f.nom_fournisseur) }}
+
+ {{ form_label(f.adresse_fournisseur) }}
+ {{ form_widget(f.adresse_fournisseur)}}
+ {{ form_errors(f.adresse_fournisseur) }}
+
+ {{ form_label(f.MDP_fournisseur) }}
+ {{ form_widget(f.MDP_fournisseur)}}
+ {{ form_errors(f.MDP_fournisseur) }}
+
+
+ {{ form_end(f) }}
+{% endblock %}

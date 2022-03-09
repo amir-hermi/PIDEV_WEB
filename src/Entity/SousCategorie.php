@@ -34,7 +34,7 @@ class SousCategorie
     private $categorie;
 
     /**
-     * @ORM\OneToMany(targetEntity=Produit::class, mappedBy="sousCategire")
+     * @ORM\OneToMany(targetEntity=Produit::class, mappedBy="sousCategire" , cascade={ "remove"})
      */
     private $produits;
 

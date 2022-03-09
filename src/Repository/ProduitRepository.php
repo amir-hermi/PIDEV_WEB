@@ -27,11 +27,11 @@ class ProduitRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->innerJoin('p.marque', 'm', "WITH", 'p.marque = m.id')
-            ->select('count(m.libelle)')
+            ->select('count(m.libelle) ')
             ->andWhere('m.libelle = :val')
             ->setParameter('val', 'Nike')
             ->getQuery()->getSingleScalarResult()
-        ;
+            ;
     }
     public function countAdidas()
     {
@@ -66,7 +66,6 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()->getResult()
             ;
     }
-
     public function rechercheParNometMarque($value)
     {
         return $this->createQueryBuilder('p')
@@ -79,6 +78,8 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()->getResult()
             ;
     }
+
+
 
 
 

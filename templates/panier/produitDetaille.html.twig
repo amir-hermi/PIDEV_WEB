@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+{% block actHome%}{% endblock %}
+{% block title %} Detaille {% endblock %}
+
+{% block ShowLogin %}
+{% endblock %}
+
+
+{% block banner %}
+
+    <!-- banner -->
+    <div class="banner10" id="home1">
+        <div class="container">
+            <h2>Detaille</h2>
+        </div>
+    </div>
+    <!-- //banner -->
+
+    <!-- breadcrumbs -->
+    <div class="breadcrumb_dress">
+        <div class="container">
+            <ul>
+                <li><a href="{{ path('home') }}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home</a> <i>/</i>
+                    <a href="{{ path('panier') }}"> Panier</a> <i>/</i>
+                </li>
+                <li>Detaille</li>
+            </ul>
+        </div>
+    </div>
+    <!-- //breadcrumbs -->
+{% endblock %}
+{% block body %}
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <section>
+
+                <div class="modal-body">
+                    <div class="col-md-5 modal_body_left">
+                        <img src="{{ asset('images/'~asset(produit.image ) ) }}" alt="" class="img-responsive" />
+                    </div>
+                    <div class="col-md-7 modal_body_right">
+                        <h4>{{ produit.nom}}</h4>
+                        <p>
+                            {{produit.description | raw}}
+                        </p>
+                        <div class="rating">
+                            <div class="rating-left">
+                                <img src="images/star-.png" alt=" " class="img-responsive" />
+                            </div>
+                            <div class="rating-left">
+                                <img src="images/star-.png" alt=" " class="img-responsive" />
+                            </div>
+                            <div class="rating-left">
+                                <img src="images/star-.png" alt=" " class="img-responsive" />
+                            </div>
+                            <div class="rating-left">
+                                <img src="images/star.png" alt=" " class="img-responsive" />
+                            </div>
+                            <div class="rating-left">
+                                <img src="images/star.png" alt=" " class="img-responsive" />
+                            </div>
+                            <div class="clearfix"> </div>
+                        </div>
+                        <div>
+                            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                            <div>
+                                {{ form_label(form.quantite) }}
+                                <br>
+                                {{ form_widget(form.quantite) }}
+                                {{ form_errors(form.quantite) }}
+                                <br>
+                                {{ form_label(form.taille) }}
+                                <br>
+                                {{ form_widget(form.taille) }}
+                                {{ form_errors(form.taille) }}
+                                <br><br>
+                                <input type="submit" class="btn-warning" value="Confirmer">
+                                {{ form_end(form) }}
+                            </div>
+
+                        </div>
+                        <!--<h5>Color</h5>
+                        <div class="color-quality">
+                            <ul>
+                                <li><a href="#"><span></span>Red</a></li>
+                                <li><a href="#" class="brown"><span></span>Yellow</a></li>
+                                <li><a href="#" class="purple"><span></span>Purple</a></li>
+                                <li><a href="#" class="gray"><span></span>Violet</a></li>
+                            </ul>
+                        </div>--!>
+                    </div>
+                    <div class="clearfix"> </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+{% endblock %}

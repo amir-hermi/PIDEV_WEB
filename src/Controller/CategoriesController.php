@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Categorie;
+use App\Entity\Commande;
 use App\Entity\Produit;
 use App\Entity\SousCategorie;
 use App\Form\CategoriesType;
 use App\Form\ProductsType;
 use App\Repository\CategorieRepository;
-use App\Repository\ProduitRepository;
 use App\Repository\SousCategorieRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +39,7 @@ class CategoriesController extends AbstractController
         );
 
         return $this->render('administrateur/categorie.html.twig',
-            ['categories' => $categories]);
+            ['categories' => $categories , 'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()]);
     }
 
     /**
@@ -77,7 +77,7 @@ class CategoriesController extends AbstractController
             return $this->redirectToRoute('listcategorie');
         }
         return $this->render('categories/add.html.twig',[
-            'form'=>$form->createView()
+            'form'=>$form->createView(), 'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
         ]);
 
     }
@@ -98,7 +98,7 @@ class CategoriesController extends AbstractController
         }
         return $this->render('categories/update.html.twig',
             [
-                'form'=>$form->createView()
+                'form'=>$form->createView(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
             ]);
 
     }

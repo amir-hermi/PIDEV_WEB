@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Commande;
 use App\Entity\SousCategorie;
 use App\Form\SousCategorieType;
 use App\Repository\SousCategorieRepository;
@@ -21,12 +22,12 @@ class SousCategorieController extends AbstractController
     public function index(SousCategorieRepository $sousCategorieRepository): Response
     {
         return $this->render('sous_categorie/index.html.twig', [
-            'sous_categories' => $sousCategorieRepository->findAll(),
+            'sous_categories' => $sousCategorieRepository->findAll(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
         ]);
     }
 
     /**
-     * @Route("/new", name="sous_categorie_new")
+     * @Route("/Catnew", name="sous_categorie_new")
      */
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -43,12 +44,12 @@ class SousCategorieController extends AbstractController
 
         return $this->render('sous_categorie/new.html.twig', [
             'sous_categorie' => $sousCategorie,
-            'form' => $form->createView(),
+            'form' => $form->createView(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
         ]);
     }
 
     /**
-     * @Route("/{id}", name="sous_categorie_show")
+     * @Route("/sousCat/{id}", name="sous_categorie_show")
      */
     public function show(SousCategorie $sousCategorie): Response
     {
@@ -56,7 +57,7 @@ class SousCategorieController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="sous_categorie_edit")
+     * @Route("/sousCat/{id}/edit", name="sous_categorie_edit")
      */
     public function edit(Request $request, SousCategorie $sousCategorie, EntityManagerInterface $entityManager, $id): Response
     {
@@ -76,12 +77,12 @@ class SousCategorieController extends AbstractController
 
         return $this->render('sous_categorie/edit.html.twig', [
             'sous_categorie' => $sousCategorie,
-            'form' => $form->createView(),
+            'form' => $form->createView(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
         ]);
     }
 
     /**
-     * @Route("/del/{id}", name="sous_categorie_deleteSCzz")
+     * @Route("sousCat/del/{id}", name="sous_categorie_deleteSCzz")
      */
     public function delete($id ,SousCategorieRepository $repository)
     {

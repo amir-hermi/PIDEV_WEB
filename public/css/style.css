@@ -306,7 +306,7 @@ ul.multi-column-dropdown h6 {
     min-height:700px;
 }
 .banner10{
-    background:url(../images/TRAIL.jpg) no-repeat 0px 0px;
+    background:url(../images/banner12.jpg) no-repeat 0px 0px;
     background-size:cover;
     -webkit-background-size:cover;
     -moz-background-size:cover;
@@ -436,7 +436,7 @@ ul.multi-column-dropdown h6 {
     border: none;
 }
 .video-img {
-    background: url(../images/2.jpg)no-repeat center;
+    background: url(../images/banner12.jpg)no-repeat center;
     -webkit-background-size: cover;
     background-size: cover;
     -moz-background-size: cover;
@@ -991,7 +991,7 @@ ul.wmuSliderPagination {
 }
 .agileinfo_banner_bottom1_grid_left a:hover,.team-bottom a:hover{
     color:#212121;
-    background:url(../images/img-sp.png) no-repeat 112px -38px;
+    background:url(../images/banner12.jpg) no-repeat 112px -38px;
 }
 .agileinfo_banner_bottom1_grid_right{
     background:url(../images/ado-banner.jpg) no-repeat 0px 0px;
@@ -1107,11 +1107,11 @@ ul.wmuSliderPagination {
     outline: none;
     padding: 10px 0;
     width: 15%;
-    background: url(../images/img-sp.png) no-repeat 26px -65px #ff9b05;
+    background: url(../images/banner12.jpg) no-repeat 26px -65px #ff9b05;
     border: none;
 }
 .w3agile_newsletter_right input[type="submit"]:hover{
-    background: url(../images/img-sp.png) no-repeat 26px -65px #212121;
+    background: url(../images/banner12.jpg) no-repeat 26px -65px #212121;
 }
 /*-- //newsletter --*/
 /*-- footer --*/
@@ -1166,7 +1166,7 @@ ul.wmuSliderPagination {
 }
 .w3_footer_grid ul.info li a {
     padding-left: 3em;
-    background: url(../images/img-sp.png) no-repeat -6px -98px;
+    background: url(../images/banner12.jpg) no-repeat -6px -98px;
 }
 .w3_footer_grid h4{
     margin:2em 0 1em;
@@ -1179,43 +1179,43 @@ ul.wmuSliderPagination {
     margin: 0 !important;
 }
 .agileits_social_button ul li a.facebook{
-    background: url(../images/img-sp.png) no-repeat -1px -130px #414141;
+    background: url(../images/banner12.jpg) no-repeat -1px -130px #414141;
     display: block;
     width: 35px;
     height: 35px;
 }
 .agileits_social_button ul li a.facebook:hover{
-    background:url(../images/img-sp.png) no-repeat -1px -130px #5E5E5E;
+    background:url(../images/banner12.jpg) no-repeat -1px -130px #5E5E5E;
     display: block;
 }
 .agileits_social_button ul li a.twitter{
-    background: url(../images/img-sp.png) no-repeat -41px -130px #414141;
+    background: url(../images/banner12.jpg) no-repeat -41px -130px #414141;
     display: block;
     width: 35px;
     height: 35px;
 }
 .agileits_social_button ul li a.twitter:hover{
-    background: url(../images/img-sp.png) no-repeat -41px -130px #5E5E5E;
+    background: url(../images/banner12.jpg) no-repeat -41px -130px #5E5E5E;
     display: block;
 }
 .agileits_social_button ul li a.google{
-    background: url(../images/img-sp.png) no-repeat -80px -130px #414141;
+    background: url(../images/banner12.jpg) no-repeat -80px -130px #414141;
     display: block;
     width: 35px;
     height: 35px;
 }
 .agileits_social_button ul li a.google:hover{
-    background: url(../images/img-sp.png) no-repeat -80px -130px #5E5E5E;
+    background: url(../images/banner12.jpg) no-repeat -80px -130px #5E5E5E;
     display: block;
 }
 .agileits_social_button ul li a.pinterest{
-    background:url(../images/img-sp.png) no-repeat -123px -130px #414141;
+    background:url(../images/banner12.jpg) no-repeat -123px -130px #414141;
     display: block;
     width: 35px;
     height: 35px;
 }
 .agileits_social_button ul li a.pinterest:hover{
-    background:url(../images/img-sp.png) no-repeat -123px -130px #5E5E5E;
+    background:url(../images/banner12.jpg) no-repeat -123px -130px #5E5E5E;
     display: block;
 }
 .footer-copy1{
@@ -1417,7 +1417,7 @@ h3.other-nw {
 }
 .entypo-facebook:before {
     content: " ";
-    background: url(../images/img-sp.png) no-repeat 7px -125px;
+    background: url(../images/banner12.jpg) no-repeat 7px -125px;
     display: block;
     width: 3em;
     height: 3em;
@@ -1429,7 +1429,7 @@ h3.other-nw {
 }
 .entypo-twitter:before {
     content: " ";
-    background:url(../images/img-sp.png) no-repeat -35px -125px;
+    background:url(../images/banner12.jpg) no-repeat -35px -125px;
     display: block;
     width: 3em;
     height: 3em;
@@ -2532,7 +2532,7 @@ table.timetable_sub {
     border:1px solid #CDCDCD;
 }
 td.invert-image a img {
-    width:30%;
+    width:10%;
     margin: 0 auto;
 }
 .rem{
@@ -3950,7 +3950,7 @@ td.invert-image a img {
         left: -1% !important;
     }
     td.invert-image a img {
-        width: 45%;
+        width: 15%;
     }
     .color-quality-left {
         float: none;

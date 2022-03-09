@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Utilisateur{% endblock %}
+{% block variabls1 %}{% endblock %}
+{% block ShowLogin %} {% endblock %}
+{% block banner %}
+    {% block header %} {% endblock %}
+    {% block footer %} {% endblock %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;</button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Register A delivery man!!</h4>
+            </div>
+            <div class="modal-body modal-body-sub">
+                <div class="row">
+                    <div class="col-md-8 modal_body_left modal_body_left1" style="border-right: 1px dotted #C2C2C2;padding-right:3em;">
+                        <div class="sap_tabs">
+                            <div id="horizontalTab" style="display: block; width: 100%; margin: 0px;">
+
+
+
+                                <div class="facts">
+                                    <div class="register">
+                                        {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                                        {# utilisation de classes bootstrap pour la mise en forme #}
+                                        <div class="row">
+                                            <div class="col-12">
+                                                {{ form_row(form.username, {  'attr':{'placeholder': 'Nom d\'utilisateur'}}) }}
+                                                {{ form_widget(form.username) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.lastname, {  'attr':{'placeholder': 'Nom d\'utilisateur'}}) }}
+                                                {{ form_widget(form.lastname) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.email, {  'attr':{'placeholder': 'Adresse email ... '}}) }}
+                                                {{ form_widget(form.email) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.tel, {  'attr':{'placeholder': 'Num telephpone ... '}}) }}
+                                                {{ form_widget(form.tel) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.password, {  'attr':{'placeholder': 'Mot de passe ... '}}) }}
+                                                {{ form_widget(form.password) }}
+                                            </div>
+                                            <div class="col-12">
+                                                {{ form_row(form.confirm_password, {  'attr':{'placeholder': 'Répéter votre mot de passe'}}) }}
+                                                {{ form_widget(form.confirm_password) }}
+                                            </div>
+
+                                            <br>
+                                            <div class="col-12">
+                                                {{ form_row(form.image) }}
+                                                {{ form_widget(form.image) }}
+                                            </div>
+
+                                        </div>
+
+
+
+
+
+                                        <input type="submit" value="Create Account"/>
+                                        {{ form_end(form) }}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <script src="js/easyResponsiveTabs.js" type="text/javascript"></script>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $('#horizontalTab').easyResponsiveTabs({
+                                    type: 'default', //Types: default, vertical, accordion
+                                    width: 'auto', //auto or any width like 600px
+                                    fit: true   // 100% fit in a container
+                                });
+                            });
+                        </script>
+                        <div id="OR" class="hidden-xs">
+                            OR</div>
+                    </div>
+                    <div>
+
+
+                    </div>
+                    <div class="col-md-4 modal_body_right modal_body_right1">
+                        <div class="row text-center sign-with">
+                            <div class="col-md-12">
+                                <h4 class="other-nw">
+                                    <img alt="image" src="{{ asset('images/ZayaniHassen.png') }}" width="250" height="300"/>
+                                    Administrator area to add a delivery person</h4>
+                            </div>
+                            <div class="col-md-12">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+

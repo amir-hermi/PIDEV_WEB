@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Commande;
 use App\Entity\Marque;
 use App\Entity\Produit;
 use App\Form\MarquesType;
 use App\Form\ProductsType;
 use App\Repository\CategorieRepository;
 use App\Repository\MarqueRepository;
-use App\Repository\ProduitRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -35,7 +35,7 @@ class MarquesController extends AbstractController
             4
         );
         return $this->render('administrateur/marque.html.twig',
-            ['marques'=>$marques]);
+            ['marques'=>$marques , 'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()]);
     }
 
     /**
@@ -69,7 +69,7 @@ class MarquesController extends AbstractController
             return $this->redirectToRoute('listMarques');
         }
         return $this->render('marques/add.html.twig',[
-            'form'=>$form->createView()
+            'form'=>$form->createView(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
         ]);
     }
 
@@ -88,7 +88,7 @@ class MarquesController extends AbstractController
         }
         return $this->render('marques/update.html.twig',
             [
-                'form'=>$form->createView()
+                'form'=>$form->createView(),'CommandeNonlue'=>$this->getDoctrine()->getRepository(Commande::class)->commandeAdmin()
             ]);
 
     }

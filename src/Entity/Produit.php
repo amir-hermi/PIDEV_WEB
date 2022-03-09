@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\ProduitRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=ProduitRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\ProduitRepository")
  */
 class Produit
 {
@@ -17,67 +20,91 @@ class Produit
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("produit")
      */
     private $id;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Assert\NotBlank(message="prix is required")
+     * @Groups("produit")
      */
     private $prix;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="image is required")
+     * @Groups("produit")
      */
     private $image;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Assert\NotBlank(message="quantite is required")
+     * @Groups("produit")
      */
     private $quantite;
 
     /**
      * @ORM\ManyToMany(targetEntity=Panier::class, inversedBy="produits")
+     * @ORM\JoinTable(name="panierproduit")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
      */
     private $panier;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Commande::class, inversedBy="produits")
-     */
-    private $commandes;
+
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="taille is required")
-     */
-    private $taille;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="nom is required")
+     * @Groups("produit")
      */
     private $nom;
 
+
+
+    /**
+     * @ORM\OneToMany(targetEntity=CommandeProduit::class, mappedBy="produit" , cascade={"persist", "remove"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     * @Groups("produit")
+     */
+    private $commandeProduits;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true , columnDefinition="ENUM('XL','M','XXL','L','S','XS','XXXL')")
+     * @Assert\NotBlank(message="la taille est obligatoire")
+     * @Groups("produit")
+     */
+    private $taille;
     /**
      * @ORM\ManyToOne(targetEntity=Marque::class, inversedBy="produits" )
      */
     private $marque;
-
     /**
      * @ORM\ManyToOne(targetEntity=SousCategorie::class, inversedBy="produits")
      */
     private $sousCategire;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $description;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Commandestock::class, mappedBy="produit")
+     * @Groups("commandestock")
+     */
+    private $commandestocks;
 
-
+    /**
+     * @ORM\ManyToMany(targetEntity=Favorie::class, mappedBy="produit")
+     */
+    private $favories;
 
     public function __construct()
     {
         $this->panier = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
+        $this->commandeProduits = new ArrayCollection();
+        $this->commandestocks = new ArrayCollection();
+        $this->favories = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -97,12 +124,12 @@ class Produit
         return $this;
     }
 
-    public function getImage()
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage( $image)
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
@@ -145,26 +172,48 @@ class Produit
         return $this;
     }
 
-    /**
-     * @return Collection|Commande[]
-     */
-    public function getCommandes(): Collection
+
+
+    public function getNom(): ?string
     {
-        return $this->commandes;
+        return $this->nom;
     }
 
-    public function addCommande(Commande $commande): self
+    public function setNom(?string $nom): self
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes[] = $commande;
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection|CommandeProduit[]
+     */
+    public function getCommandeProduits(): Collection
+    {
+        return $this->commandeProduits;
+    }
+
+    public function addCommandeProduit(CommandeProduit $commandeProduit): self
+    {
+        if (!$this->commandeProduits->contains($commandeProduit)) {
+            $this->commandeProduits[] = $commandeProduit;
+            $commandeProduit->setProduit($this);
         }
 
         return $this;
     }
 
-    public function removeCommande(Commande $commande): self
+    public function removeCommandeProduit(CommandeProduit $commandeProduit): self
     {
-        $this->commandes->removeElement($commande);
+        if ($this->commandeProduits->removeElement($commandeProduit)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeProduit->getProduit() === $this) {
+                $commandeProduit->setProduit(null);
+            }
+        }
 
         return $this;
     }
@@ -180,19 +229,6 @@ class Produit
 
         return $this;
     }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
     public function getMarque(): ?Marque
     {
         return $this->marque;
@@ -217,9 +253,70 @@ class Produit
         return $this;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
+        return $this;
+    }
+    /**
+     * @return Collection|Commandestock[]
+     */
+    public function getCommandestocks(): Collection
+    {
+        return $this->commandestocks;
+    }
 
+    public function addCommandestock(Commandestock $commandestock): self
+    {
+        if (!$this->commandestocks->contains($commandestock)) {
+            $this->commandestocks[] = $commandestock;
+            $commandestock->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandestock(Commandestock $commandestock): self
+    {
+        if ($this->commandestocks->removeElement($commandestock)) {
+            $commandestock->removeProduit($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorie>
+     */
+    public function getFavories(): Collection
+    {
+        return $this->favories;
+    }
+
+    public function addFavory(Favorie $favory): self
+    {
+        if (!$this->favories->contains($favory)) {
+            $this->favories[] = $favory;
+            $favory->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavory(Favorie $favory): self
+    {
+        if ($this->favories->removeElement($favory)) {
+            $favory->removeProduit($this);
+        }
+
+        return $this;
+    }
 
 
 }
